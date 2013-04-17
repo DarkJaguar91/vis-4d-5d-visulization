@@ -20,6 +20,7 @@ public class DataHolder {
 		
 		sliderMenu = new SliderMenu();
 		plotter = new frmPlot();
+		plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 	}
 	
 	public static void updatePlotter(){

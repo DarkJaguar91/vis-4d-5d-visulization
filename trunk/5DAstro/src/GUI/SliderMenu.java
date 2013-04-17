@@ -1,5 +1,7 @@
 package GUI;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -34,7 +36,6 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	// globals
 	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
 	public RangeSlider range1, range2, range3, range4, rangeHeat;
-	private JMenuItem loadFile;
 	
 	// data holder global (for method calls)
 
@@ -161,10 +162,24 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 		// adding the Menu
 		JMenuBar bar = new JMenuBar();
-		loadFile = new JMenuItem("Load new File");
+		JMenuItem loadFile = new JMenuItem("Load new File");
+		JMenuItem show3D = new JMenuItem("Show 3D Plotter");
 		bar.add(loadFile);
+		bar.add(show3D);
 		
-		loadFile.addMouseListener(this);
+		loadFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Add call to loadFile (not done yet)
+			}
+		});
+		show3D.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				DataHolder.plotter.setVisible(true);				
+			}
+		});
 		
 		this.setJMenuBar(bar);		
 		
