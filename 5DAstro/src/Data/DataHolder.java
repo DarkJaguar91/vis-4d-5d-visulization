@@ -19,7 +19,7 @@ public class DataHolder {
 		fixedDimensions[1] = 1;
 		fixedDimensions[2] = 2;
 		
-		data = new DataArray(50, 50, 50, 100, new String [] {"first", "second", "third", "forth"});
+		data = new DataArray(10, 10, 10, 10, new String [] {"first", "second", "third", "forth"});
 		
 		sliderMenu = new SliderMenu();
 		plotter = new frmPlot();
