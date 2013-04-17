@@ -172,9 +172,11 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		JMenuBar bar = new JMenuBar();
 		JMenuItem loadFile = new JMenuItem("Load new File");
 		JMenuItem show3D = new JMenuItem("Show 3D Plotter");
+		JMenuItem showGraph = new JMenuItem("Show Graph Plotter");
 		JMenuItem Help = new JMenuItem("Help");
 		bar.add(loadFile);
 		bar.add(show3D);
+		bar.add(showGraph);
 		bar.add(Help);
 		
 		loadFile.addActionListener(new ActionListener() {
@@ -187,6 +189,12 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				DataHolder.plotter.setVisible(true);				
+			}
+		});
+		showGraph.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				DataHolder.plotterGraph.setVisible(true);				
 			}
 		});
 		Help.addActionListener(new ActionListener() {
@@ -274,7 +282,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 					.addContainerGap()
 				);
 		this.pack();
-		this.setSize(this.getWidth() * 2, this.getHeight());
+//		this.setSize(this.getWidth() * 2, this.getHeight());
 	}
 
 	
