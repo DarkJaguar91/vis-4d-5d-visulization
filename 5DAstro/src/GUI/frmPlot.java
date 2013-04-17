@@ -250,4 +250,7 @@ public class frmPlot extends JFrame implements ActionListener,ChangeListener{
 		}
 		
 	}
+	public void reload(){
+		this.frmPlot.reload();
+	}
 }
