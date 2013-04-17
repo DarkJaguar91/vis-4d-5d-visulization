@@ -3,8 +3,8 @@ package Data;
 import java.util.Vector;
 
 public class Loader {
-	private static int[] fixedDimensions = {3,2,1};
-	private static int[] fixedStep = {0,0,0};
+	private static int[] fixedDimensions = {3,2,0};
+	private static int[] fixedStep = {0,10,0};
 	private static Vector<DataChangeListener> listeners = new Vector<DataChangeListener>();
 	private static int size[] = {15,15,15,15};
 	private static float[][][][] data;
@@ -20,6 +20,7 @@ public class Loader {
 		assert index >= 0 && index < 4 && val >= 0 && val <= 4 && step >= 0 && step < size[index];
 		fixedDimensions[index] = val;
 		fixedStep[index] = step;
+		notifyAllListeners();
 	}
 	public static int getFixedDimension(int index){
 		assert index >= 0 && index < 4;
@@ -182,7 +183,7 @@ public class Loader {
 			for (int j = 0; j < size[1]; ++j)
 				for (int k = 0; k < size[2]; ++k)
 					for (int l = 0; l < size[3]; ++l){
-						data[i][j][k][l] = i/(float)size[0]*100;
+						data[i][j][k][l] = l;
 						vMax[4] = Math.max(vMax[4], data[i][j][k][l]);
 						vMin[4] = Math.min(vMin[4], data[i][j][k][l]);
 					}

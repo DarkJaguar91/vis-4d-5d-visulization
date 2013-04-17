@@ -167,6 +167,73 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			gl.glVertex3d(globalMinX-axisOffset,0,globalMinY-axisOffset + i);
 			gl.glVertex3d(globalMinX-axisOffset - majorTickLength,0,globalMinY-axisOffset + i);
 		}
+		double stepX = 0, stepY = 0, stepH = 0;
+		switch(Loader.getFixedDimension(0)){
+		case 0:
+			stepX = (globalMaxX - globalMinX)/Loader.getSize(1);
+			stepY = (globalMaxY - globalMinY)/Loader.getSize(2);
+			stepH = (globalMaxH - globalMinH)/Loader.getSize(3);
+			break;
+		case 1:
+			stepX = (globalMaxX - globalMinX)/Loader.getSize(0);
+			stepY = (globalMaxY - globalMinY)/Loader.getSize(2);
+			stepH = (globalMaxH - globalMinH)/Loader.getSize(3);
+			break;
+		case 2:
+			stepX = (globalMaxX - globalMinX)/Loader.getSize(0);
+			stepY = (globalMaxY - globalMinY)/Loader.getSize(1);
+			stepH = (globalMaxH - globalMinH)/Loader.getSize(3);
+			break;
+		case 3:
+			stepX = (globalMaxX - globalMinX)/Loader.getSize(0);
+			stepY = (globalMaxY - globalMinY)/Loader.getSize(1);
+			stepH = (globalMaxH - globalMinH)/Loader.getSize(2);
+			break;
+		}
+		
+		
+		switch(Loader.getFixedDimension(1)){
+		case 0:
+			gl.glColor3f(0, 1, 0);
+			gl.glVertex3d(Loader.getFixedDimensionStep(1)*stepX,0,-axisOffset-10);
+			gl.glVertex3d(Loader.getFixedDimensionStep(1)*stepX,0,-axisOffset+10);
+			gl.glColor3f(1, 1, 1);
+			break;
+		case 1:
+			gl.glColor3f(0, 1, 0);
+			gl.glVertex3d(-axisOffset-10,Loader.getFixedDimensionStep(1)*stepY,0);
+			gl.glVertex3d(-axisOffset+10,Loader.getFixedDimensionStep(1)*stepY,0);
+			gl.glColor3f(1, 1, 1);
+			break;
+		case 2:
+			gl.glColor3f(0, 1, 0);
+			gl.glVertex3d(globalMaxX,Loader.getFixedDimensionStep(1)*stepH,-axisOffset-10);
+			gl.glVertex3d(globalMaxX,Loader.getFixedDimensionStep(1)*stepH,-axisOffset+10);
+			gl.glColor3f(1, 1, 1);
+			break;
+		}
+		
+		switch(Loader.getFixedDimension(2)){
+		case 0:
+			gl.glColor3f(0, 1, 0);
+			gl.glVertex3d(Loader.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
+			gl.glVertex3d(Loader.getFixedDimensionStep(2)*stepX,0,-axisOffset+10);
+			gl.glColor3f(1, 1, 1);
+			break;
+		case 1:
+			gl.glColor3f(0, 1, 0);
+			gl.glVertex3d(-axisOffset-10,Loader.getFixedDimensionStep(2)*stepY,0);
+			gl.glVertex3d(-axisOffset+10,Loader.getFixedDimensionStep(2)*stepY,0);
+			gl.glColor3f(1, 1, 1);
+			break;
+		case 2:
+			gl.glColor3f(0, 1, 0);
+			gl.glVertex3d(globalMaxX,Loader.getFixedDimensionStep(2)*stepH,-axisOffset-10);
+			gl.glVertex3d(globalMaxX,Loader.getFixedDimensionStep(2)*stepH,-axisOffset+10);
+			gl.glColor3f(1, 1, 1);
+			break;
+		}
+		
 		gl.glEnd();
 		gl.glEndList();
 	}
