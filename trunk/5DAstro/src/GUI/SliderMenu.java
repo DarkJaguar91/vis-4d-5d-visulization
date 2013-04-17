@@ -8,6 +8,8 @@ import java.util.Hashtable;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JSlider;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.ChangeEvent;
@@ -32,6 +34,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	// globals
 	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
 	public RangeSlider range1, range2, range3, range4, rangeHeat;
+	private JMenuItem loadFile;
 	
 	// data holder global (for method calls)
 
@@ -156,7 +159,14 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			setText(rangeHeat);
 		}
 		
-		// adding the Change Listener
+		// adding the Menu
+		JMenuBar bar = new JMenuBar();
+		loadFile = new JMenuItem("Load new File");
+		bar.add(loadFile);
+		
+		loadFile.addMouseListener(this);
+		
+		this.setJMenuBar(bar);		
 		
 		// placement (Layout)
 		setSize(800, 720);
@@ -359,7 +369,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent e) {
 	}
 
 	@Override

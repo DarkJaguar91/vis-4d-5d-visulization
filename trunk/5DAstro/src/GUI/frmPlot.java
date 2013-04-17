@@ -178,7 +178,7 @@ public class frmPlot extends JFrame implements ActionListener,ChangeListener{
 		super("3D Viewer");
 		setSize(800, 600);
 
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 
 		//this.setExtendedState(MAXIMIZED_BOTH);
 		frmPlot = new Plotter3D();
