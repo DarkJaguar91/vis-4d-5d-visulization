@@ -4,10 +4,10 @@ import GUI.SliderMenu;
 
 public class DataHolder {
 	
-	public int[] fixedDimensions;
-	public DataArray data;
+	public static int[] fixedDimensions;
+	public static DataArray data;
 	
-	public SliderMenu sliderMenu;
+	public static SliderMenu sliderMenu;
 	
 	public DataHolder (){
 		fixedDimensions = new int[3];
@@ -17,14 +17,14 @@ public class DataHolder {
 		
 		data = new DataArray(10, 10, 10, 10, new String [] {"first", "second", "third", "forth"});
 		
-		sliderMenu = new SliderMenu(this);
+		sliderMenu = new SliderMenu();
 	}
 	
-	public int getFixedDimension(int index){
+	public static int getFixedDimension(int index){
 		return fixedDimensions[index];
 	}
 	
-	public int getFixedDimensionStep(int index){
+	public static int getFixedDimensionStep(int index){
 		if (index == 0){
 			return sliderMenu.chooser3D.getValue();
 		}
@@ -39,7 +39,7 @@ public class DataHolder {
 		}
 	}
 	
-	public float getMinFilter(int index){
+	public static float getMinFilter(int index){
 		if (index == 0){
 			float step = (data.getMaxData(0) - data.getMinData(0)) / (data.getLength(0));
 			return sliderMenu.range1.getLowValue() * step;
@@ -61,7 +61,7 @@ public class DataHolder {
 		}
 	}
 	
-	public float getMaxFilter(int index){
+	public static float getMaxFilter(int index){
 		if (index == 0){
 			float step = (data.getMaxData(0) - data.getMinData(0)) / (data.getLength(0));
 			return sliderMenu.range1.getHighValue() * step;

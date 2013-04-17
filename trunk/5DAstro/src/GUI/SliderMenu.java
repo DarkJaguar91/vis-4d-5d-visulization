@@ -34,11 +34,9 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	public RangeSlider range1, range2, range3, range4, rangeHeat;
 	
 	// data holder global (for method calls)
-	protected DataHolder dataHolder;
 
-	public SliderMenu(DataHolder holder) {
+	public SliderMenu() {
 		super("Slider Menu");
-		dataHolder = holder;
 
 		InitializeVariables();
 		
@@ -59,12 +57,12 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// Slider details
 		{
 			// initialise
-			chooser3D = new JSlider(0, 3, 3 - dataHolder.fixedDimensions[0]);
-			chooser2D = new JSlider(0, 3, 3 - dataHolder.fixedDimensions[1]);
-			chooserGraph = new JSlider(0, 3, 3 - dataHolder.fixedDimensions[2]);
-			step3D = new JSlider(0, dataHolder.data.getLength(0) - 1, 0);
-			step2D = new JSlider(0, dataHolder.data.getLength(1) - 1, 0);
-			stepGraph = new JSlider(0, dataHolder.data.getLength(2) - 1, 0);
+			chooser3D = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[0]);
+			chooser2D = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[1]);
+			chooserGraph = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[2]);
+			step3D = new JSlider(0, DataHolder.data.getLength(0) - 1, 0);
+			step2D = new JSlider(0, DataHolder.data.getLength(1) - 1, 0);
+			stepGraph = new JSlider(0, DataHolder.data.getLength(2) - 1, 0);
 			
 			// add change listener
 			chooser2D.addMouseListener(this);
@@ -103,10 +101,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			
 			// add labels
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(3), new JLabel(dataHolder.data.getDimensionName(0)));
-			labels.put(new Integer(2), new JLabel(dataHolder.data.getDimensionName(1)));
-			labels.put(new Integer(1), new JLabel(dataHolder.data.getDimensionName(2)));
-			labels.put(new Integer(0), new JLabel(dataHolder.data.getDimensionName(3)));
+			labels.put(new Integer(3), new JLabel(DataHolder.data.getDimensionName(0)));
+			labels.put(new Integer(2), new JLabel(DataHolder.data.getDimensionName(1)));
+			labels.put(new Integer(1), new JLabel(DataHolder.data.getDimensionName(2)));
+			labels.put(new Integer(0), new JLabel(DataHolder.data.getDimensionName(3)));
 			chooserGraph.setLabelTable(labels);
 			chooserGraph.setPaintLabels(true);
 			step3D.setPaintLabels(true);
@@ -120,10 +118,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// Range selector setup
 		{
 			// initialize
-			range1 = new RangeSlider(0, dataHolder.data.getLength(0)-1, 0, dataHolder.data.getLength(0)-1);
-			range2 = new RangeSlider(0, dataHolder.data.getLength(1)-1, 0, dataHolder.data.getLength(1)-1);
-			range3 = new RangeSlider(0, dataHolder.data.getLength(2)-1, 0, dataHolder.data.getLength(2)-1);
-			range4 = new RangeSlider(0, dataHolder.data.getLength(3)-1, 0, dataHolder.data.getLength(3)-1);
+			range1 = new RangeSlider(0, DataHolder.data.getLength(0)-1, 0, DataHolder.data.getLength(0)-1);
+			range2 = new RangeSlider(0, DataHolder.data.getLength(1)-1, 0, DataHolder.data.getLength(1)-1);
+			range3 = new RangeSlider(0, DataHolder.data.getLength(2)-1, 0, DataHolder.data.getLength(2)-1);
+			range4 = new RangeSlider(0, DataHolder.data.getLength(3)-1, 0, DataHolder.data.getLength(3)-1);
 			rangeHeat = new RangeSlider(0, 100, 0, 100);
 			
 			// add change listener
@@ -292,21 +290,21 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			dim = 4;
 		else {
 			if (slider.equals(chooser3D)){
-				dim = dataHolder.fixedDimensions[0];
+				dim = DataHolder.fixedDimensions[0];
 			}
 			else if (slider.equals(chooser2D)){
-				dim = dataHolder.fixedDimensions[1];
+				dim = DataHolder.fixedDimensions[1];
 			}
 			else if(slider.equals(chooserGraph)){
-				dim = dataHolder.fixedDimensions[2];
+				dim = DataHolder.fixedDimensions[2];
 			}
 		}
 		
-		float min = dataHolder.data.getMinData(dim);
-		float max = dataHolder.data.getMaxData(dim);
+		float min = DataHolder.data.getMinData(dim);
+		float max = DataHolder.data.getMaxData(dim);
 		float step = 0;
 		if (dim != 4)
-			step = (max - min) / (dataHolder.data.getLength(dim));
+			step = (max - min) / (DataHolder.data.getLength(dim));
 		else
 			step = (max - min) / 100;
 		
@@ -331,7 +329,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	}
 	
 	private void checkSlider(int num, RangeSlider slider){
-		if (dataHolder.fixedDimensions[0] == num){
+		if (DataHolder.fixedDimensions[0] == num){
 			step3D.setMinimum(slider.getLowValue());
 			step3D.setMaximum(slider.getHighValue());
 		
@@ -342,7 +340,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			
 			setText(step3D);
 		}
-		else if (dataHolder.fixedDimensions[1] == num){
+		else if (DataHolder.fixedDimensions[1] == num){
 			step2D.setMinimum(slider.getLowValue());
 			step2D.setMaximum(slider.getHighValue());
 			
@@ -351,7 +349,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			// set labels
 			setText(step2D);
 		}
-		else if (dataHolder.fixedDimensions[2] == num){
+		else if (DataHolder.fixedDimensions[2] == num){
 			stepGraph.setMinimum(slider.getLowValue());
 			stepGraph.setMaximum(slider.getHighValue());
 			
@@ -381,43 +379,43 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	public void mouseReleased(MouseEvent e) {
 		// chooser 3D
 		if (e.getSource().equals(chooser3D)){
-			dataHolder.fixedDimensions[0] = 3 - chooser3D.getValue();
+			DataHolder.fixedDimensions[0] = 3 - chooser3D.getValue();
 		}
 		// chooser 2D
 		if (e.getSource().equals(chooser2D)){
 			if ((chooser2D.getValue()) == chooser3D.getValue()){
-				chooser2D.setValue(3 - dataHolder.fixedDimensions[1]);
+				chooser2D.setValue(3 - DataHolder.fixedDimensions[1]);
 			}
 			else {
-				dataHolder.fixedDimensions[1] = (3 - chooser2D.getValue());
+				DataHolder.fixedDimensions[1] = (3 - chooser2D.getValue());
 			}
 		}
 		// chooser graph
 		if (e.getSource().equals(chooserGraph)){
 			if (chooser3D.getValue() == chooserGraph.getValue() || chooser2D.getValue() == chooserGraph.getValue()) {
-				chooserGraph.setValue(3 - dataHolder.fixedDimensions[2]);
+				chooserGraph.setValue(3 - DataHolder.fixedDimensions[2]);
 			}else {
-				dataHolder.fixedDimensions[2] = 3 - chooserGraph.getValue();
+				DataHolder.fixedDimensions[2] = 3 - chooserGraph.getValue();
 			}
 		}
 		
 		// array for checking
 		ArrayList<Integer> temp = new ArrayList<>();
 		for (int i = 0; i < 4; ++i)
-			if (i != dataHolder.fixedDimensions[0])
+			if (i != DataHolder.fixedDimensions[0])
 				temp.add(i);
-		if (!temp.contains(dataHolder.fixedDimensions[1])){
-			dataHolder.fixedDimensions[1] = temp.get(0);
-			chooser2D.setValue(3 - dataHolder.fixedDimensions[1]);
+		if (!temp.contains(DataHolder.fixedDimensions[1])){
+			DataHolder.fixedDimensions[1] = temp.get(0);
+			chooser2D.setValue(3 - DataHolder.fixedDimensions[1]);
 		}
 		
 		temp.clear();
 		for (int i = 0; i < 4; ++i)
-			if (i != dataHolder.fixedDimensions[0] && i != dataHolder.fixedDimensions[1])
+			if (i != DataHolder.fixedDimensions[0] && i != DataHolder.fixedDimensions[1])
 				temp.add(i);
-		if (!temp.contains(dataHolder.fixedDimensions[2])){
-			dataHolder.fixedDimensions[2] = temp.get(0);
-			chooserGraph.setValue(3 - dataHolder.fixedDimensions[2]);
+		if (!temp.contains(DataHolder.fixedDimensions[2])){
+			DataHolder.fixedDimensions[2] = temp.get(0);
+			chooserGraph.setValue(3 - DataHolder.fixedDimensions[2]);
 		}
 
 		// check all steps
