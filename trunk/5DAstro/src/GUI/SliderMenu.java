@@ -30,8 +30,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	private static final long serialVersionUID = 5316995727166463675L;
 
 	// globals
-	protected JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
-	protected RangeSlider range1, range2, range3, range4, rangeHeat;
+	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
+	public RangeSlider range1, range2, range3, range4, rangeHeat;
 	
 	// data holder global (for method calls)
 	protected DataHolder dataHolder;
