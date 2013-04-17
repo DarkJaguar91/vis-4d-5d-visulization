@@ -1,5 +1,6 @@
 package Data;
 
+import GUI.GraphScreen;
 import GUI.SliderMenu;
 import GUI.frmPlot;
 
@@ -10,6 +11,8 @@ public class DataHolder {
 	
 	public static SliderMenu sliderMenu;
 	public static frmPlot plotter;
+	public static GraphScreen plotterGraph;
+	
 	public DataHolder (){
 		fixedDimensions = new int[3];
 		fixedDimensions[0] = 0;
@@ -21,10 +24,13 @@ public class DataHolder {
 		sliderMenu = new SliderMenu();
 		plotter = new frmPlot();
 		plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
+		plotterGraph = new GraphScreen();
+		plotterGraph.setLocation(sliderMenu.getWidth(), plotter.getHeight());
 	}
 	
 	public static void updatePlotter(){
 		plotter.reload();
+		plotterGraph.plotGraph();
 	}
 	
 	public static int getFixedDimension(int index){
