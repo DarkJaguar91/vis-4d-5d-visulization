@@ -12,11 +12,11 @@ public class DataHolder {
 	public static frmPlot plotter;
 	public DataHolder (){
 		fixedDimensions = new int[3];
-		fixedDimensions[0] = 2;
+		fixedDimensions[0] = 0;
 		fixedDimensions[1] = 1;
-		fixedDimensions[2] = 0;
+		fixedDimensions[2] = 2;
 		
-		data = new DataArray(10, 10, 10, 10, new String [] {"first", "second", "third", "forth"});
+		data = new DataArray(100, 100, 100, 100, new String [] {"first", "second", "third", "forth"});
 		
 		sliderMenu = new SliderMenu();
 		plotter = new frmPlot();
@@ -59,7 +59,7 @@ public class DataHolder {
 			return sliderMenu.range4.getLowValue();
 		}
 		else if (index == 4){
-			float step = (data.getMaxData(4) - data.getMinData(4)) / (data.getLength(4));
+			float step = (data.getMaxData(4) - data.getMinData(4)) / 100f;
 			return sliderMenu.rangeHeat.getLowValue() * step;
 		}
 		else {
@@ -81,7 +81,7 @@ public class DataHolder {
 			return sliderMenu.range4.getHighValue();
 		}
 		else if (index == 4){
-			float step = (data.getMaxData(4) - data.getMinData(4)) / (data.getLength(4));
+			float step = (data.getMaxData(4) - data.getMinData(4)) / 100f;
 			return sliderMenu.rangeHeat.getHighValue() * step;
 		}
 		else {
