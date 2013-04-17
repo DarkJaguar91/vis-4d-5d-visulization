@@ -47,7 +47,9 @@ public class DataArray {
 		DimensionNames = names;
 		calculateData();
 	}
-
+	public final float[][][][] getData(){
+		return data;
+	}
 	private void calculateData() {
 		minData = new float[5];
 		maxData = new float[5];

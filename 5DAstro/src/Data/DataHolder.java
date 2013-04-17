@@ -1,6 +1,7 @@
 package Data;
 
 import GUI.SliderMenu;
+import GUI.frmPlot;
 
 public class DataHolder {
 	
@@ -8,16 +9,17 @@ public class DataHolder {
 	public static DataArray data;
 	
 	public static SliderMenu sliderMenu;
-	
+	public static frmPlot plotter;
 	public DataHolder (){
 		fixedDimensions = new int[3];
-		fixedDimensions[0] = 0;
+		fixedDimensions[0] = 2;
 		fixedDimensions[1] = 1;
-		fixedDimensions[2] = 2;
+		fixedDimensions[2] = 0;
 		
 		data = new DataArray(10, 10, 10, 10, new String [] {"first", "second", "third", "forth"});
 		
 		sliderMenu = new SliderMenu();
+		plotter = new frmPlot();
 	}
 	
 	public static int getFixedDimension(int index){
