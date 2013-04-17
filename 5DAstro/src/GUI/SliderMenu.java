@@ -335,9 +335,6 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 			step3D.setValue(slider.getLowValue());
 			
-			System.out.println(step3D.getMinimum() + " -- " + step3D.getMaximum());
-			
-			
 			setText(step3D);
 		}
 		else if (DataHolder.fixedDimensions[1] == num){
