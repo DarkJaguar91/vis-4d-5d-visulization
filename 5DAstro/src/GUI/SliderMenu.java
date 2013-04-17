@@ -58,12 +58,12 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// Slider details
 		{
 			// initialise
-			chooser3D = new JSlider(0, 3, 3 - dataHolder.chosen3D);
-			chooser2D = new JSlider(0, 3, 3 - dataHolder.chosen2D);
-			chooserGraph = new JSlider(0, 3, 3 - dataHolder.chosenGraph);
-			step3D = new JSlider(0, 100, 0);
-			step2D = new JSlider(0, 100, 0);
-			stepGraph = new JSlider(0, 100, 0);
+			chooser3D = new JSlider(0, 3, 3 - dataHolder.fixedDimensions[0]);
+			chooser2D = new JSlider(0, 3, 3 - dataHolder.fixedDimensions[1]);
+			chooserGraph = new JSlider(0, 3, 3 - dataHolder.fixedDimensions[2]);
+			step3D = new JSlider(0, dataHolder.data.getLength(0) - 1, 0);
+			step2D = new JSlider(0, dataHolder.data.getLength(1) - 1, 0);
+			stepGraph = new JSlider(0, dataHolder.data.getLength(2) - 1, 0);
 			
 			// add change listener
 			chooser2D.addMouseListener(this);
@@ -102,34 +102,27 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			
 			// add labels
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(0), new JLabel("data 1"));
-			labels.put(new Integer(1), new JLabel("data 2"));
-			labels.put(new Integer(2), new JLabel("data 3"));
-			labels.put(new Integer(3), new JLabel("data 4"));
+			labels.put(new Integer(3), new JLabel(dataHolder.data.getDimensionName(0)));
+			labels.put(new Integer(2), new JLabel(dataHolder.data.getDimensionName(1)));
+			labels.put(new Integer(1), new JLabel(dataHolder.data.getDimensionName(2)));
+			labels.put(new Integer(0), new JLabel(dataHolder.data.getDimensionName(3)));
 			chooserGraph.setLabelTable(labels);
 			chooserGraph.setPaintLabels(true);
-			labels.clear();
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			step3D.setLabelTable(labels);
 			step3D.setPaintLabels(true);
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			step2D.setLabelTable(labels);
+			setText(step3D);
 			step2D.setPaintLabels(true);
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			stepGraph.setLabelTable(labels);
+			setText(step2D);
 			stepGraph.setPaintLabels(true);
+			setText(stepGraph);
 		}
 
 		// Range selector setup
 		{
 			// initialize
-			range1 = new RangeSlider(0, 100, 0, 100);
-			range2 = new RangeSlider(0, 100, 0, 100);
-			range3 = new RangeSlider(0, 100, 0, 100);
-			range4 = new RangeSlider(0, 100, 0, 100);
+			range1 = new RangeSlider(0, dataHolder.data.getLength(0)-1, 0, dataHolder.data.getLength(0)-1);
+			range2 = new RangeSlider(0, dataHolder.data.getLength(1)-1, 0, dataHolder.data.getLength(1)-1);
+			range3 = new RangeSlider(0, dataHolder.data.getLength(2)-1, 0, dataHolder.data.getLength(2)-1);
+			range4 = new RangeSlider(0, dataHolder.data.getLength(3)-1, 0, dataHolder.data.getLength(3)-1);
 			rangeHeat = new RangeSlider(0, 100, 0, 100);
 			
 			// add change listener
@@ -152,27 +145,16 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			rangeHeat.setPaintTicks(true);
 			
 			// setLabels
-			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			range1.setLabelTable(labels);
 			range1.setPaintLabels(true);
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			range2.setLabelTable(labels);
+			setText(range1);
 			range2.setPaintLabels(true);
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			range3.setLabelTable(labels);
+			setText(range2);
 			range3.setPaintLabels(true);
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			range4.setLabelTable(labels);
+			setText(range3);
 			range4.setPaintLabels(true);
-			labels.put(new Integer(0), new JLabel("0"));
-			labels.put(new Integer(100), new JLabel("100"));
-			rangeHeat.setLabelTable(labels);
+			setText(range4);
 			rangeHeat.setPaintLabels(true);
+			setText(rangeHeat);
 		}
 		
 		// adding the Change Listener
@@ -259,40 +241,90 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	public void stateChanged(ChangeEvent e) {
 		// Range 1
 		if (e.getSource().equals(range1)){
+			setText(range1);
 			checkSlider(0, range1);
 		}
 		// Range 2
 		else if (e.getSource().equals(range2)){
+			setText(range2);
 			checkSlider(1, range2);
 		}
 		// Range 3
 		else if (e.getSource().equals(range3)){
+			setText(range3);
 			checkSlider(2, range3);
 		}
 		// Range 4
 		else if (e.getSource().equals(range4)){
+			setText(range4);
 			checkSlider(3, range4);
 		}
 		// heat
 		else if (e.getSource().equals(rangeHeat)){
-			
+			setText(rangeHeat);
 		}
 		// step 3D
 		else if (e.getSource().equals(step3D)){
-			
+			setText(step3D);
 		}
 		// step2D
 		else if (e.getSource().equals(step2D)){
-			
+			setText(step2D);
 		}
 		// stepGraph
 		else if (e.getSource().equals(stepGraph)){
-			
+			setText(stepGraph);
+		}
+	}
+	
+	private void setText(JSlider slider){		
+		int dim = 0;
+		if (slider.equals(range1))
+			dim = 0;
+		else if (slider.equals(range2))
+			dim = 1;
+		else if (slider.equals(range3))
+			dim = 2;
+		else if (slider.equals(range4))
+			dim = 3;
+		else if (slider.equals(rangeHeat))
+			dim = 4;
+		else {
+			if (slider.equals(chooser3D)){
+				dim = dataHolder.fixedDimensions[0];
+			}
+			else if (slider.equals(chooser2D)){
+				dim = dataHolder.fixedDimensions[1];
+			}
+			else if(slider.equals(chooserGraph)){
+				dim = dataHolder.fixedDimensions[2];
+			}
+		}
+		
+		float min = dataHolder.data.getMinData(dim);
+		float max = dataHolder.data.getMaxData(dim);
+		float step = (max - min) / (slider.getMaximum() - slider.getMinimum());
+		
+		if (slider instanceof RangeSlider){
+			RangeSlider s = (RangeSlider)slider;
+			Hashtable<Object, Object> labels = new Hashtable<>();
+			labels.put(new Integer(s.getLowValue()), new JLabel("" + (s.getLowValue() + 1) *  step));
+			labels.put(new Integer(s.getHighValue()), new JLabel("" + (s.getHighValue() + 1) * step));
+			labels.put(new Integer(s.getMinimum()), new JLabel("" + min));
+			labels.put(new Integer(s.getMaximum()), new JLabel("" + max));
+			s.setLabelTable(labels);
+		}
+		else{
+			Hashtable<Object, Object> labels = new Hashtable<>();
+			labels.put(new Integer(slider.getValue()), new JLabel("" + (slider.getValue() + 1) * step));
+			labels.put(new Integer(slider.getMinimum()), new JLabel("" + min));
+			labels.put(new Integer(slider.getMaximum()), new JLabel("" + max));
+			slider.setLabelTable(labels);
 		}
 	}
 	
 	private void checkSlider(int num, RangeSlider slider){
-		if (dataHolder.chosen3D == num){
+		if (dataHolder.fixedDimensions[0] == num){
 			step3D.setMinimum(slider.getLowValue());
 			step3D.setMaximum(slider.getHighValue());
 		
@@ -304,7 +336,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			labels.put(new Integer(slider.getHighValue()), new JLabel("" + slider.getHighValue()));
 			step3D.setLabelTable(labels);
 		}
-		else if (dataHolder.chosen2D == num){
+		else if (dataHolder.fixedDimensions[1] == num){
 			step2D.setMinimum(slider.getLowValue());
 			step2D.setMaximum(slider.getHighValue());
 			
@@ -316,7 +348,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			labels.put(new Integer(slider.getHighValue()), new JLabel("" + slider.getHighValue()));
 			step2D.setLabelTable(labels);
 		}
-		else if (dataHolder.chosenGraph == num){
+		else if (dataHolder.fixedDimensions[2] == num){
 			stepGraph.setMinimum(slider.getLowValue());
 			stepGraph.setMaximum(slider.getHighValue());
 			
@@ -350,43 +382,43 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	public void mouseReleased(MouseEvent e) {
 		// chooser 3D
 		if (e.getSource().equals(chooser3D)){
-			dataHolder.chosen3D = 3 - chooser3D.getValue();
+			dataHolder.fixedDimensions[0] = 3 - chooser3D.getValue();
 		}
 		// chooser 2D
 		if (e.getSource().equals(chooser2D)){
 			if ((chooser2D.getValue()) == chooser3D.getValue()){
-				chooser2D.setValue(3 - dataHolder.chosen2D);
+				chooser2D.setValue(3 - dataHolder.fixedDimensions[1]);
 			}
 			else {
-				dataHolder.chosen2D = (3 - chooser2D.getValue());
+				dataHolder.fixedDimensions[1] = (3 - chooser2D.getValue());
 			}
 		}
 		// chooser graph
 		if (e.getSource().equals(chooserGraph)){
 			if (chooser3D.getValue() == chooserGraph.getValue() || chooser2D.getValue() == chooserGraph.getValue()) {
-				chooserGraph.setValue(3 - dataHolder.chosenGraph);
+				chooserGraph.setValue(3 - dataHolder.fixedDimensions[2]);
 			}else {
-				dataHolder.chosenGraph = 3 - chooserGraph.getValue();
+				dataHolder.fixedDimensions[2] = 3 - chooserGraph.getValue();
 			}
 		}
 		
 		// array for checking
 		ArrayList<Integer> temp = new ArrayList<>();
 		for (int i = 0; i < 4; ++i)
-			if (i != dataHolder.chosen3D)
+			if (i != dataHolder.fixedDimensions[0])
 				temp.add(i);
-		if (!temp.contains(dataHolder.chosen2D)){
-			dataHolder.chosen2D = temp.get(0);
-			chooser2D.setValue(3 - dataHolder.chosen2D);
+		if (!temp.contains(dataHolder.fixedDimensions[1])){
+			dataHolder.fixedDimensions[1] = temp.get(0);
+			chooser2D.setValue(3 - dataHolder.fixedDimensions[1]);
 		}
 		
 		temp.clear();
 		for (int i = 0; i < 4; ++i)
-			if (i != dataHolder.chosen3D && i != dataHolder.chosen2D)
+			if (i != dataHolder.fixedDimensions[0] && i != dataHolder.fixedDimensions[1])
 				temp.add(i);
-		if (!temp.contains(dataHolder.chosenGraph)){
-			dataHolder.chosenGraph = temp.get(0);
-			chooserGraph.setValue(3 - dataHolder.chosenGraph);
+		if (!temp.contains(dataHolder.fixedDimensions[2])){
+			dataHolder.fixedDimensions[2] = temp.get(0);
+			chooserGraph.setValue(3 - dataHolder.fixedDimensions[2]);
 		}
 
 		// check all steps
@@ -394,8 +426,6 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		checkSlider(1, range2);
 		checkSlider(2, range3);
 		checkSlider(3, range4);
-		
-		// send the data
 	}
 	
 }
