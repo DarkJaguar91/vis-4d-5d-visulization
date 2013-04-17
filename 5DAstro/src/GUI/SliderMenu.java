@@ -42,6 +42,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 
 		InitializeVariables();
 		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 	}
 
@@ -160,7 +161,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// adding the Change Listener
 		
 		// placement (Layout)
-		setSize(800, 620);
+		setSize(800, 720);
 		GroupLayout layout = new GroupLayout(this.getContentPane());
 		this.getContentPane().setLayout(layout);
 		
@@ -303,22 +304,28 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 		float min = dataHolder.data.getMinData(dim);
 		float max = dataHolder.data.getMaxData(dim);
-		float step = (max - min) / (slider.getMaximum() - slider.getMinimum());
+		float step = 0;
+		if (dim != 4)
+			step = (max - min) / (dataHolder.data.getLength(dim));
+		else
+			step = (max - min) / 100;
+		
+		step = (float)Math.floor(step * 100f) / 100f;
 		
 		if (slider instanceof RangeSlider){
 			RangeSlider s = (RangeSlider)slider;
 			Hashtable<Object, Object> labels = new Hashtable<>();
 			labels.put(new Integer(s.getLowValue()), new JLabel("" + (s.getLowValue() + 1) *  step));
 			labels.put(new Integer(s.getHighValue()), new JLabel("" + (s.getHighValue() + 1) * step));
-			labels.put(new Integer(s.getMinimum()), new JLabel("" + min));
-			labels.put(new Integer(s.getMaximum()), new JLabel("" + max));
+			labels.put(new Integer(s.getMinimum()), new JLabel("" + (s.getMinimum()) * step));
+			labels.put(new Integer(s.getMaximum()), new JLabel("" + (s.getMaximum())* step));
 			s.setLabelTable(labels);
 		}
 		else{
 			Hashtable<Object, Object> labels = new Hashtable<>();
 			labels.put(new Integer(slider.getValue()), new JLabel("" + (slider.getValue() + 1) * step));
-			labels.put(new Integer(slider.getMinimum()), new JLabel("" + min));
-			labels.put(new Integer(slider.getMaximum()), new JLabel("" + max));
+			labels.put(new Integer(slider.getMinimum()), new JLabel("" + (slider.getMinimum()) * step));
+			labels.put(new Integer(slider.getMaximum()), new JLabel("" + (slider.getMaximum()) * step));
 			slider.setLabelTable(labels);
 		}
 	}
@@ -330,11 +337,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 			step3D.setValue(slider.getLowValue());
 			
-			// set labels
-			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(slider.getLowValue()), new JLabel("" + slider.getLowValue()));
-			labels.put(new Integer(slider.getHighValue()), new JLabel("" + slider.getHighValue()));
-			step3D.setLabelTable(labels);
+			System.out.println(step3D.getMinimum() + " -- " + step3D.getMaximum());
+			
+			
+			setText(step3D);
 		}
 		else if (dataHolder.fixedDimensions[1] == num){
 			step2D.setMinimum(slider.getLowValue());
@@ -343,10 +349,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			step2D.setValue(slider.getLowValue());
 			
 			// set labels
-			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(slider.getLowValue()), new JLabel("" + slider.getLowValue()));
-			labels.put(new Integer(slider.getHighValue()), new JLabel("" + slider.getHighValue()));
-			step2D.setLabelTable(labels);
+			setText(step2D);
 		}
 		else if (dataHolder.fixedDimensions[2] == num){
 			stepGraph.setMinimum(slider.getLowValue());
@@ -354,11 +357,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			
 			stepGraph.setValue(slider.getLowValue());
 			
-			// set labels
-			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(slider.getLowValue()), new JLabel("" + slider.getLowValue()));
-			labels.put(new Integer(slider.getHighValue()), new JLabel("" + slider.getHighValue()));
-			stepGraph.setLabelTable(labels);
+			setText(stepGraph);
 		}
 	}
 

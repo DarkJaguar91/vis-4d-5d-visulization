@@ -15,7 +15,7 @@ public class DataHolder {
 		fixedDimensions[1] = 1;
 		fixedDimensions[2] = 2;
 		
-		data = new DataArray(100, 100, 100, 100, new String [] {"first", "second", "third", "forth"});
+		data = new DataArray(10, 10, 10, 10, new String [] {"first", "second", "third", "forth"});
 		
 		sliderMenu = new SliderMenu(this);
 	}
@@ -41,19 +41,19 @@ public class DataHolder {
 	
 	public float getMinFilter(int index){
 		if (index == 0){
-			float step = (data.getMaxData(0) - data.getMinData(0)) / (sliderMenu.range1.getMaximum() - sliderMenu.range1.getMinimum());
+			float step = (data.getMaxData(0) - data.getMinData(0)) / (data.getLength(0));
 			return sliderMenu.range1.getLowValue() * step;
 		}
 		else if (index == 1){
-			float step = (data.getMaxData(1) - data.getMinData(1)) / (sliderMenu.range2.getMaximum() - sliderMenu.range2.getMinimum());
+			float step = (data.getMaxData(1) - data.getMinData(1)) / (data.getLength(1));
 			return sliderMenu.range2.getLowValue() * step;
 		}
 		else if (index == 2){
-			float step = (data.getMaxData(2) - data.getMinData(2)) / (sliderMenu.range3.getMaximum() - sliderMenu.range3.getMinimum());
+			float step = (data.getMaxData(2) - data.getMinData(2)) / (data.getLength(2));
 			return sliderMenu.range3.getLowValue() * step;
 		}
 		else if (index == 3){
-			float step = (data.getMaxData(3) - data.getMinData(3)) / (sliderMenu.range4.getMaximum() - sliderMenu.range4.getMinimum());
+			float step = (data.getMaxData(3) - data.getMinData(3)) / (data.getLength(3));
 			return sliderMenu.range4.getLowValue() * step;
 		}
 		else {
@@ -63,19 +63,19 @@ public class DataHolder {
 	
 	public float getMaxFilter(int index){
 		if (index == 0){
-			float step = (data.getMaxData(0) - data.getMinData(0)) / (sliderMenu.range1.getMaximum() - sliderMenu.range1.getMinimum());
+			float step = (data.getMaxData(0) - data.getMinData(0)) / (data.getLength(0));
 			return sliderMenu.range1.getHighValue() * step;
 		}
 		else if (index == 1){
-			float step = (data.getMaxData(1) - data.getMinData(1)) / (sliderMenu.range2.getMaximum() - sliderMenu.range2.getMinimum());
+			float step = (data.getMaxData(1) - data.getMinData(1)) / (data.getLength(1));
 			return sliderMenu.range2.getHighValue() * step;
 		}
 		else if (index == 2){
-			float step = (data.getMaxData(2) - data.getMinData(2)) / (sliderMenu.range3.getMaximum() - sliderMenu.range3.getMinimum());
+			float step = (data.getMaxData(2) - data.getMinData(2)) / (data.getLength(2));
 			return sliderMenu.range3.getHighValue() * step;
 		}
 		else if (index == 3){
-			float step = (data.getMaxData(3) - data.getMinData(3)) / (sliderMenu.range4.getMaximum() - sliderMenu.range4.getMinimum());
+			float step = (data.getMaxData(3) - data.getMinData(3)) / (data.getLength(3));
 			return sliderMenu.range4.getHighValue() * step;
 		}
 		else {
