@@ -240,23 +240,23 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	public void stateChanged(ChangeEvent e) {
 		// Range 1
 		if (e.getSource().equals(range1)){
-			setText(range1);
 			checkSlider(0, range1);
+			setText(range1);
 		}
 		// Range 2
 		else if (e.getSource().equals(range2)){
-			setText(range2);
 			checkSlider(1, range2);
+			setText(range2);
 		}
 		// Range 3
 		else if (e.getSource().equals(range3)){
-			setText(range3);
 			checkSlider(2, range3);
+			setText(range3);
 		}
 		// Range 4
 		else if (e.getSource().equals(range4)){
-			setText(range4);
 			checkSlider(3, range4);
+			setText(range4);
 		}
 		// heat
 		else if (e.getSource().equals(rangeHeat)){
@@ -274,6 +274,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		else if (e.getSource().equals(stepGraph)){
 			setText(stepGraph);
 		}
+		
+		DataHolder.updatePlotter();
 	}
 	
 	private void setText(JSlider slider){		
@@ -420,6 +422,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		checkSlider(1, range2);
 		checkSlider(2, range3);
 		checkSlider(3, range4);
+		
+		DataHolder.updatePlotter();
 	}
 	
 }

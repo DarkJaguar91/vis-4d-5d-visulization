@@ -22,19 +22,23 @@ public class DataHolder {
 		plotter = new frmPlot();
 	}
 	
+	public static void updatePlotter(){
+		plotter.reload();
+	}
+	
 	public static int getFixedDimension(int index){
 		return fixedDimensions[index];
 	}
 	
 	public static int getFixedDimensionStep(int index){
 		if (index == 0){
-			return sliderMenu.chooser3D.getValue();
+			return sliderMenu.step3D.getValue();
 		}
 		else if (index == 1){
-			return sliderMenu.chooser2D.getValue();
+			return sliderMenu.step2D.getValue();
 		}
 		else if (index == 2){
-			return sliderMenu.chooserGraph.getValue();
+			return sliderMenu.stepGraph.getValue();
 		}
 		else {
 			return -1;
