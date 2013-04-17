@@ -56,6 +56,10 @@ public class DataHolder {
 			float step = (data.getMaxData(3) - data.getMinData(3)) / (data.getLength(3));
 			return sliderMenu.range4.getLowValue() * step;
 		}
+		else if (index == 4){
+			float step = (data.getMaxData(4) - data.getMinData(4)) / (data.getLength(4));
+			return sliderMenu.rangeHeat.getLowValue() * step;
+		}
 		else {
 			return Float.MIN_VALUE;
 		}
@@ -77,6 +81,10 @@ public class DataHolder {
 		else if (index == 3){
 			float step = (data.getMaxData(3) - data.getMinData(3)) / (data.getLength(3));
 			return sliderMenu.range4.getHighValue() * step;
+		}
+		else if (index == 4){
+			float step = (data.getMaxData(4) - data.getMinData(4)) / (data.getLength(4));
+			return sliderMenu.rangeHeat.getHighValue() * step;
 		}
 		else {
 			return Float.MIN_VALUE;
