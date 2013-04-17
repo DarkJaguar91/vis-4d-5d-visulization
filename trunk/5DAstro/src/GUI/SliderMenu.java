@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.ChangeEvent;
@@ -52,8 +53,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	 * Initialises the JFrame components and layout 
 	 */
 	private void InitializeVariables() {
-		JLabel RangeandFilter = new JLabel("Filter and Range sliders");
-		JLabel heatSelector = new JLabel("Filter down Temperature");
+		JLabel RangeandFilter = new JLabel("Fixate Dimension and Dimension Range sliders");
+		JLabel heatSelector = new JLabel("Set Temperature Range");
 		JLabel step3DL = new JLabel("Step for 3D Display");
 		JLabel step2DL = new JLabel("Step for 2D Display");
 		JLabel stepGraphL = new JLabel("Step for Graph");
@@ -128,6 +129,13 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			range4 = new RangeSlider(0, DataHolder.data.getLength(3)-1, 0, DataHolder.data.getLength(3)-1);
 			rangeHeat = new RangeSlider(0, 100, 0, 100);
 			
+			// set Labels
+			range1.setToolTipText("Select the Range for Dimension: " + DataHolder.data.getDimensionName(0));
+			range2.setToolTipText("Select the Range for Dimension: " + DataHolder.data.getDimensionName(1));
+			range3.setToolTipText("Select the Range for Dimension: " + DataHolder.data.getDimensionName(2));
+			range4.setToolTipText("Select the Range for Dimension: " + DataHolder.data.getDimensionName(3));
+			rangeHeat.setToolTipText("Select the Range for the \"Temperature\"");
+			
 			// add change listener
 			range1.addChangeListener(this);
 			range2.addChangeListener(this);
@@ -164,8 +172,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		JMenuBar bar = new JMenuBar();
 		JMenuItem loadFile = new JMenuItem("Load new File");
 		JMenuItem show3D = new JMenuItem("Show 3D Plotter");
+		JMenuItem Help = new JMenuItem("Help");
 		bar.add(loadFile);
 		bar.add(show3D);
+		bar.add(Help);
 		
 		loadFile.addActionListener(new ActionListener() {
 			@Override
@@ -174,17 +184,22 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			}
 		});
 		show3D.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				DataHolder.plotter.setVisible(true);				
+			}
+		});
+		Help.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(DataHolder.sliderMenu, "Slider tooltips explain each sliders propertis.\n\n\nAbout:\nVisualizer for 4 Dimensional Array Data\n\nAuthors:\nBrandon James Talbot\nBenjamin Hugo\nHeinrich Straus", "Help", JOptionPane.INFORMATION_MESSAGE);				
 			}
 		});
 		
 		this.setJMenuBar(bar);		
 		
 		// placement (Layout)
-		setSize(800, 720);
+//		setSize(800, 720);
 		GroupLayout layout = new GroupLayout(this.getContentPane());
 		this.getContentPane().setLayout(layout);
 		
@@ -258,6 +273,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 					.addComponent(stepGraph, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap()
 				);
+		this.pack();
+		this.setSize(this.getWidth() * 2, this.getHeight());
 	}
 
 	
