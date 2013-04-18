@@ -38,7 +38,7 @@ public class DataHolder {
 		plotter = new frmPlot();
 		plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 		plotterGraph = new GraphScreen();
-		plotterGraph.setLocation(sliderMenu.getWidth(), plotter.getHeight());
+		plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
 	}
 	
 	/**
@@ -47,6 +47,7 @@ public class DataHolder {
 	public static void updatePlotter(){
 		plotter.reload();
 		plotterGraph.plotGraph();
+		System.out.println(DataHolder.getMinFilter(4));
 	}
 	
 	/**
@@ -99,8 +100,8 @@ public class DataHolder {
 			return sliderMenu.range4.getLowValue();
 		}
 		else if (index == 4){
-			float step = (data.getMaxData(4) - data.getMinData(4)) / 100f;
-			return sliderMenu.rangeHeat.getLowValue() * step;
+			float val = DataHolder.data.getMinData(4) + (DataHolder.data.getMaxData(4) - DataHolder.data.getMinData(4)) * (float)((sliderMenu.rangeHeat.getLowValue() - sliderMenu.rangeHeat.getMinimum()) / (float)(sliderMenu.rangeHeat.getMaximum() - (float)sliderMenu.rangeHeat.getMinimum()));
+			return val;
 		}
 		else {
 			return Float.MIN_VALUE;
@@ -128,8 +129,8 @@ public class DataHolder {
 			return sliderMenu.range4.getHighValue();
 		}
 		else if (index == 4){
-			float step = (data.getMaxData(4) - data.getMinData(4)) / 100f;
-			return sliderMenu.rangeHeat.getHighValue() * step;
+			float val = DataHolder.data.getMinData(4) + (DataHolder.data.getMaxData(4) - DataHolder.data.getMinData(4)) * (float)((sliderMenu.rangeHeat.getHighValue() - sliderMenu.rangeHeat.getMinimum()) / (float)(sliderMenu.rangeHeat.getMaximum() - (float)sliderMenu.rangeHeat.getMinimum()));
+			return val;
 		}
 		else {
 			return Float.MIN_VALUE;
