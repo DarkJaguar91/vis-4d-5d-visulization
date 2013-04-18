@@ -1,5 +1,6 @@
 package Drawing3D;
 import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
+
 import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static javax.media.opengl.GL.GL_DEPTH_TEST;
 import static javax.media.opengl.GL.GL_LEQUAL;
@@ -19,6 +20,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.text.DecimalFormat;
+import java.util.Vector;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -31,9 +33,14 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.SwingUtilities;
 
 import Data.DataHolder;
-
+import GUI.frmPlot;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
+/**
+ * 3+1 D scatter plotter with options for keeping a 4th dimension fixed
+ * implements basic point selection and value filters
+ * @author Benjamin
+ */
 public class Plotter3D extends GLJPanel implements GLEventListener,
 				MouseMotionListener,MouseListener,MouseWheelListener{
 	/**
@@ -92,7 +99,9 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 	boolean shouldRecompileAxis = false;
 	
 	String label1 = "X", label2 = "Y", label3 = "Z";
-	
+	/**
+	 * Default constructor for 3D plotter
+	 */
 	public Plotter3D(){
 		
 		this.addGLEventListener(this);
@@ -170,6 +179,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glEnd();
 		gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_LINE);
 		double stepX = 0, stepY = 0, stepH = 0;
+		//Draws cutting plane and cutting line indicators onto the axis (depending on the fixed dimensions)
 		switch(DataHolder.getFixedDimension(0)){
 		case 0:
 			stepX = (globalMaxX - globalMinX)/DataHolder.data.getLength(1);
@@ -598,6 +608,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 	 * @param gl
 	 */
 	private void loadDisplayLists(GL2 gl){
+		//first set the global maxs and mins
 		switch(DataHolder.getFixedDimension(0)){
 		case 0: 
 			globalMaxX = DataHolder.data.getMaxData(1);
@@ -652,6 +663,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			label3 = DataHolder.data.getDimensionName(2);
 			break;
 		}
+		//delete display lists if necessary
 		if (!firstRun){
 			gl.glDeleteLists(pointsList, 1);
 			gl.glDeleteLists(axisList, 1);
@@ -689,7 +701,9 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glRotatef(angleX,0,-1,0);
 		gl.glRotatef(angleY,1,0,0);
 		gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
+		gl.glColor3f(1, 0, 1);
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, ""+label2);
+		gl.glColor3f(1, 1, 1);
 		gl.glPopMatrix();
 		//X ruler:
 		for(float i = 0; i < globalMaxX - globalMinX + axisOffset; i += majorTickIntervalX){
@@ -710,7 +724,9 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glRotatef(angleX,0,-1,0);
 		gl.glRotatef(angleY,1,0,0);
 		gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
+		gl.glColor3f(1, 0, 1);
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, ""+label1);
+		gl.glColor3f(1, 1, 1);
 		gl.glPopMatrix();
 		//Z ruler:
 		for(float i = 0; i < globalMaxY - globalMinY + axisOffset; i += majorTickIntervalY){
@@ -730,7 +746,9 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glRotatef(angleX,0,-1,0);
 		gl.glRotatef(angleY,1,0,0);
 		gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
+		gl.glColor3f(1, 0, 1);
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, ""+label3);
+		gl.glColor3f(1, 1, 1);
 		gl.glPopMatrix();
 		
 		//Draw text:
@@ -828,6 +846,37 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		//Draw the rotating text on the rulers:
 		gl.glCallList(axisList);
 		drawRullerText(gl);
+		//Draw color range:
+		gl.glMatrixMode(GL_PROJECTION); //setup ortho in the projection matrix
+		gl.glPushMatrix(); //save perspective matrix
+		gl.glLoadIdentity();
+		gl.glOrtho(0.0, getWidth(), 0.0, getHeight(), -1.0, 1.0);
+		gl.glMatrixMode(GL_MODELVIEW);
+		gl.glLoadIdentity();
+		//draw a coloured strip (blue to yellow to red)
+		gl.glBegin(GL2.GL_QUAD_STRIP);
+		gl.glColor3f(0, 0, 1);
+		gl.glVertex2f(0,0);
+		gl.glVertex2f(0,15f);
+		gl.glColor3f(1, 1, 0);
+		gl.glVertex2f(getWidth()/2,0);
+		gl.glVertex2f(getWidth()/2,15f);
+		gl.glColor3f(1, 0, 0);
+		gl.glVertex2f(getWidth(),0);
+		gl.glVertex2f(getWidth(),15f);
+		gl.glEnd();
+		//draw min and max as text on the strip:
+		gl.glColor3f(1, 1, 1);
+		gl.glDisable(GL_DEPTH_TEST);
+		gl.glRasterPos2i(3, 3);
+		glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_10, ""+String.format("%.3f%n", DataHolder.data.getMinData(4)));
+		String max = String.format("%.3f%n", DataHolder.data.getMaxData(4));
+		gl.glRasterPos2i(getWidth()-max.length()*5, 3);
+		glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_10, ""+max);
+		gl.glEnable(GL_DEPTH_TEST);
+		gl.glMatrixMode(GL_PROJECTION);
+		gl.glPopMatrix(); //back to perspective matrix
+		gl.glMatrixMode(GL_MODELVIEW); //back to model view matrix multiplication
 	}
 
 	/**
@@ -835,11 +884,12 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 	 */
 	@Override
 	public void dispose(GLAutoDrawable drawable) { animator.stop(); }
-
+	/**
+	 * Does a rotation according to mouse movement
+	 */
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
 		if (isMouseRightDown){
-			unproject(arg0);
 			angleX -= (arg0.getX()-prevX);
 			angleY += (arg0.getY()-prevY);
 			if (angleX > 360)
@@ -857,9 +907,15 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		unproject(arg0);
+		
 	}
-	private void unproject(MouseEvent arg0){
+	/**
+	 * Selects a point in 3D space by unprojecting the cursor point on the near and far planes and then
+	 * linearly looping (may be inefficient!!!) through the points and testing distance between point and line
+	 * to determine if the user has clicked near the point in unprojected 3space.
+	 * @param arg0 MouseEvent
+	 */
+	private void select(MouseEvent arg0){
 		float realy = viewport[3] - (int) arg0.getY() - 1;
 		glu.gluUnProject(arg0.getX(),realy, 0.1,viewMatrix,0,projectionMatrix,0,viewport,0,worldspaceCoordNear,0);
 		glu.gluUnProject(arg0.getX(),realy, 1,viewMatrix,0,projectionMatrix,0,viewport,0,worldspaceCoordFar,0);			
@@ -867,7 +923,206 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		double vX = - worldspaceCoordNear[0] + worldspaceCoordFar[0];
 		double vY = - worldspaceCoordNear[1] + worldspaceCoordFar[1];
 		double vZ = - worldspaceCoordNear[2] + worldspaceCoordFar[2];
-		double vLength = Math.sqrt(vX*vX + vY*vY + vZ*vZ);		
+		double vDist = Math.sqrt(vX*vX + vY*vY + vZ*vZ);
+		Vector<Float[]> pointList = new Vector<Float[]>();
+		
+		//foreach point in 3 unfixed dimensions
+		switch(DataHolder.getFixedDimension(0)){
+		case 0:
+			double stepD = (DataHolder.data.getMaxData(0) - DataHolder.data.getMinData(0))/DataHolder.data.getLength(0);
+			double stepX = (globalMaxX - globalMinX)/DataHolder.data.getLength(1);
+			double stepY = (globalMaxY - globalMinY)/DataHolder.data.getLength(2);
+			double stepH = (globalMaxH - globalMinH)/DataHolder.data.getLength(3);
+			
+			for (int i = (int)DataHolder.getMinFilter(1); i <= Math.min(DataHolder.data.getLength(1)-1,(int)DataHolder.getMaxFilter(1)); ++i)
+				for (int j = (int)DataHolder.getMinFilter(2); j <= Math.min(DataHolder.data.getLength(2)-1,(int)DataHolder.getMaxFilter(2)); ++j)
+					for (int k = (int)DataHolder.getMinFilter(3); k <= Math.min(DataHolder.data.getLength(3)-1,(int)DataHolder.getMaxFilter(3)); ++k)
+					{
+						if (DataHolder.data.getData()[DataHolder.getFixedDimensionStep(0)][i][j][k] < DataHolder.getMinFilter(4) || 
+								DataHolder.data.getData()[DataHolder.getFixedDimensionStep(0)][i][j][k] > DataHolder.getMaxFilter(4))
+							continue;
+						
+						Float[] pt = {
+								new Float(DataHolder.data.getMinData(0) + DataHolder.getFixedDimensionStep(0)*stepD),
+								new Float(DataHolder.data.getMinData(1) + i*stepX),
+								new Float(DataHolder.data.getMinData(2) + j*stepY),
+								new Float(DataHolder.data.getMinData(3) + k*stepH),
+								new Float(DataHolder.data.getData()[DataHolder.getFixedDimensionStep(0)][i][j][k])};
+						//distance point to line in 3D:
+						double dX = worldspaceCoordNear[0] - pt[1];
+						double dY = worldspaceCoordNear[1] - pt[2];
+						double dZ = worldspaceCoordNear[2] - pt[3];
+						double cX = dY*vZ - dZ*vY;
+						double cY = dZ*vX - dX*vZ;
+						double cZ = dX*vY - dY*vX;
+						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
+				
+						if (dist < 5)
+							pointList.add(pt);
+					}
+			break;
+		case 1:
+			stepD = (DataHolder.data.getMaxData(1) - DataHolder.data.getMinData(1))/DataHolder.data.getLength(1);
+			stepX = (globalMaxX - globalMinX)/DataHolder.data.getLength(0);
+			stepY = (globalMaxY - globalMinY)/DataHolder.data.getLength(2);
+			stepH = (globalMaxH - globalMinH)/DataHolder.data.getLength(3);
+			
+			for (int i = (int)DataHolder.getMinFilter(0); i <= Math.min(DataHolder.data.getLength(0)-1,(int)DataHolder.getMaxFilter(0)); ++i)
+				for (int j = (int)DataHolder.getMinFilter(2); j <= Math.min(DataHolder.data.getLength(2)-1,(int)DataHolder.getMaxFilter(2)); ++j)
+					for (int k = (int)DataHolder.getMinFilter(3); k <= Math.min(DataHolder.data.getLength(3)-1,(int)DataHolder.getMaxFilter(3)); ++k)
+					{
+						if (DataHolder.data.getData()[i][DataHolder.getFixedDimensionStep(0)][j][k] < DataHolder.getMinFilter(4) || 
+								DataHolder.data.getData()[i][DataHolder.getFixedDimensionStep(0)][j][k] > DataHolder.getMaxFilter(4))
+							continue;
+						
+						Float[] pt = {new Float(DataHolder.data.getMinData(0) + i*stepX),
+								new Float(DataHolder.data.getMinData(1) + DataHolder.getFixedDimensionStep(1)*stepD),
+								new Float(DataHolder.data.getMinData(2) + j*stepY),
+								new Float(DataHolder.data.getMinData(3) + k*stepH),
+								new Float(DataHolder.data.getData()[i][DataHolder.getFixedDimensionStep(0)][j][k])};
+						//distance point to line in 3D:
+						double dX = worldspaceCoordNear[0] - pt[0];
+						double dY = worldspaceCoordNear[1] - pt[2];
+						double dZ = worldspaceCoordNear[2] - pt[3];
+						double cX = dY*vZ - dZ*vY;
+						double cY = dZ*vX - dX*vZ;
+						double cZ = dX*vY - dY*vX;
+						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
+				
+						if (dist < 5)
+							pointList.add(pt);
+					}
+			break;
+		case 2:
+			stepD = (DataHolder.data.getMaxData(2) - DataHolder.data.getMinData(2))/DataHolder.data.getLength(2);
+			stepX = (globalMaxX - globalMinX)/DataHolder.data.getLength(0);
+			stepY = (globalMaxY - globalMinY)/DataHolder.data.getLength(1);
+			stepH = (globalMaxH - globalMinH)/DataHolder.data.getLength(3);
+			
+			for (int i = (int)DataHolder.getMinFilter(0); i <= Math.min(DataHolder.data.getLength(0)-1,(int)DataHolder.getMaxFilter(0)); ++i)
+				for (int j = (int)DataHolder.getMinFilter(1); j <= Math.min(DataHolder.data.getLength(1)-1,(int)DataHolder.getMaxFilter(1)); ++j)
+					for (int k = (int)DataHolder.getMinFilter(3); k <= Math.min(DataHolder.data.getLength(3)-1,(int)DataHolder.getMaxFilter(3)); ++k)
+					{
+						if (DataHolder.data.getData()[i][j][DataHolder.getFixedDimensionStep(0)][k] < DataHolder.getMinFilter(4) || 
+								DataHolder.data.getData()[i][j][DataHolder.getFixedDimensionStep(0)][k] > DataHolder.getMaxFilter(4))
+							continue;
+						
+						Float[] pt = {new Float(DataHolder.data.getMinData(0) + i*stepX),
+								new Float(DataHolder.data.getMinData(1) + j*stepY),
+								new Float(DataHolder.data.getMinData(2) + DataHolder.getFixedDimensionStep(2)*stepD),
+								new Float(DataHolder.data.getMinData(3) + k*stepH),
+								new Float(DataHolder.data.getData()[i][j][DataHolder.getFixedDimensionStep(0)][k])};
+						//distance point to line in 3D:
+						double dX = worldspaceCoordNear[0] - pt[0];
+						double dY = worldspaceCoordNear[1] - pt[1];
+						double dZ = worldspaceCoordNear[2] - pt[3];
+						double cX = dY*vZ - dZ*vY;
+						double cY = dZ*vX - dX*vZ;
+						double cZ = dX*vY - dY*vX;
+						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
+				
+						if (dist < 5)
+							pointList.add(pt);
+					}
+			break;
+		case 3:
+			stepD = (DataHolder.data.getMaxData(3) - DataHolder.data.getMinData(3))/DataHolder.data.getLength(3);
+			stepX = (globalMaxX - globalMinX)/DataHolder.data.getLength(0);
+			stepY = (globalMaxY - globalMinY)/DataHolder.data.getLength(1);
+			stepH = (globalMaxH - globalMinH)/DataHolder.data.getLength(2);
+			
+			for (int i = (int)DataHolder.getMinFilter(0); i <= Math.min(DataHolder.data.getLength(0)-1,(int)DataHolder.getMaxFilter(0)); ++i)
+				for (int j = (int)DataHolder.getMinFilter(1); j <= Math.min(DataHolder.data.getLength(1)-1,(int)DataHolder.getMaxFilter(1)); ++j)
+					for (int k = (int)DataHolder.getMinFilter(2); k <= Math.min(DataHolder.data.getLength(2)-1,(int)DataHolder.getMaxFilter(2)); ++k)
+					{
+						if (DataHolder.data.getData()[i][j][k][DataHolder.getFixedDimensionStep(0)] < DataHolder.getMinFilter(4) || 
+								DataHolder.data.getData()[i][j][k][DataHolder.getFixedDimensionStep(0)] > DataHolder.getMaxFilter(4))
+							continue;
+						
+						Float[] pt = {new Float(DataHolder.data.getMinData(0) + i*stepX),
+								new Float(DataHolder.data.getMinData(1) + j*stepY),
+								new Float(DataHolder.data.getMinData(2) + k*stepH),
+								new Float(DataHolder.data.getMinData(3) + DataHolder.getFixedDimensionStep(3)*stepD),
+								new Float(DataHolder.data.getData()[i][j][k][DataHolder.getFixedDimensionStep(0)])};
+						//distance point to line in 3D:
+						double dX = worldspaceCoordNear[0] - pt[0];
+						double dY = worldspaceCoordNear[1] - pt[1];
+						double dZ = worldspaceCoordNear[2] - pt[2];
+						double cX = dY*vZ - dZ*vY;
+						double cY = dZ*vX - dX*vZ;
+						double cZ = dX*vY - dY*vX;
+						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
+				
+						if (dist < 5)
+							pointList.add(pt);
+					}
+			break;
+		}
+		
+		//find the closest point the the viewers near plane:
+		Float[] ptNearest = null;
+		double nearestSq = 0;
+		if (pointList.size() > 0){
+			ptNearest = pointList.elementAt(0);
+			switch(DataHolder.getFixedDimension(0)){
+			case 0:
+				nearestSq = (ptNearest[1] - worldspaceCoordNear[0])*(ptNearest[1] - worldspaceCoordNear[0]) +
+					(ptNearest[2] - worldspaceCoordNear[1])*(ptNearest[2] - worldspaceCoordNear[1]) +
+					(ptNearest[3] - worldspaceCoordNear[2])*(ptNearest[3] - worldspaceCoordNear[2]);
+				break;
+			case 1:
+				nearestSq = (ptNearest[0] - worldspaceCoordNear[0])*(ptNearest[0] - worldspaceCoordNear[0]) +
+				(ptNearest[2] - worldspaceCoordNear[1])*(ptNearest[2] - worldspaceCoordNear[1]) +
+				(ptNearest[3] - worldspaceCoordNear[2])*(ptNearest[3] - worldspaceCoordNear[2]);
+				break;
+			case 2:
+				nearestSq = (ptNearest[0] - worldspaceCoordNear[0])*(ptNearest[0] - worldspaceCoordNear[0]) +
+				(ptNearest[1] - worldspaceCoordNear[1])*(ptNearest[1] - worldspaceCoordNear[1]) +
+				(ptNearest[3] - worldspaceCoordNear[2])*(ptNearest[3] - worldspaceCoordNear[2]);
+				break;
+			case 3:
+				nearestSq = (ptNearest[0] - worldspaceCoordNear[0])*(ptNearest[0] - worldspaceCoordNear[0]) +
+				(ptNearest[1] - worldspaceCoordNear[1])*(ptNearest[1] - worldspaceCoordNear[1]) +
+				(ptNearest[2] - worldspaceCoordNear[2])*(ptNearest[2] - worldspaceCoordNear[2]);
+				break;
+			}
+			for (int i = 1; i < pointList.size(); ++i){
+				Float[] ptQ = pointList.elementAt(i);
+				double distSqQ = 0;
+				switch(DataHolder.getFixedDimension(0)){
+				case 0:
+					distSqQ = (ptQ[1] - worldspaceCoordNear[0])*(ptQ[1] - worldspaceCoordNear[0]) +
+						(ptQ[2] - worldspaceCoordNear[1])*(ptQ[2] - worldspaceCoordNear[1]) +
+						(ptQ[3] - worldspaceCoordNear[2])*(ptQ[3] - worldspaceCoordNear[2]);
+					break;
+				case 1:
+					distSqQ = (ptQ[0] - worldspaceCoordNear[0])*(ptQ[0] - worldspaceCoordNear[0]) +
+					(ptQ[2] - worldspaceCoordNear[1])*(ptQ[2] - worldspaceCoordNear[1]) +
+					(ptQ[3] - worldspaceCoordNear[2])*(ptQ[3] - worldspaceCoordNear[2]);
+					break;
+				case 2:
+					distSqQ = (ptQ[0] - worldspaceCoordNear[0])*(ptQ[0] - worldspaceCoordNear[0]) +
+					(ptQ[1] - worldspaceCoordNear[1])*(ptQ[1] - worldspaceCoordNear[1]) +
+					(ptQ[3] - worldspaceCoordNear[2])*(ptQ[3] - worldspaceCoordNear[2]);
+					break;
+				case 3:
+					distSqQ = (ptQ[0] - worldspaceCoordNear[0])*(ptQ[0] - worldspaceCoordNear[0]) +
+					(ptQ[1] - worldspaceCoordNear[1])*(ptQ[1] - worldspaceCoordNear[1]) +
+					(ptQ[2] - worldspaceCoordNear[2])*(ptQ[2] - worldspaceCoordNear[2]);
+					break;
+				}
+				if (distSqQ < nearestSq){
+					nearestSq = distSqQ;
+					ptNearest = ptQ;
+				}
+			}
+		}
+		DataHolder.setSelectedPoint(ptNearest);
+		if (ptNearest != null)
+			((frmPlot)this.getParent().getParent().getParent().getParent()).setTitle(
+					String.format("3D Viewer --- Selected [%.3f%n,%.3f%n,%.3f%n,%.3f%n,%.3f%n]", 
+					ptNearest[0],ptNearest[1],ptNearest[2],ptNearest[3],ptNearest[4]));
+		/*double vLength = Math.sqrt(vX*vX + vY*vY + vZ*vZ);		
 		vX = vX / vLength;
 		vY = vY / vLength;
 		vZ = vZ / vLength;
@@ -875,7 +1130,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		
 		XI = (worldspaceCoordNear[0] + t*vX);
 		YI = 0; //XZ-Plane
-		ZI = (worldspaceCoordNear[2] + t*vZ);
+		ZI = (worldspaceCoordNear[2] + t*vZ);*/
 	}
 	@Override
 	public void mouseClicked(MouseEvent arg0) {}
@@ -899,6 +1154,8 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			prevX = arg0.getX();
 			prevY = arg0.getY();
 			isMouseRightDown = true;
+		} else if (arg0.getButton() == MouseEvent.BUTTON1){
+			select(arg0);
 		}
 	}
 

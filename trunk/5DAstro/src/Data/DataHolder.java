@@ -1,5 +1,7 @@
 package Data;
 
+import javax.swing.SwingUtilities;
+
 import GUI.GraphScreen;
 import GUI.SliderMenu;
 import GUI.frmPlot;
@@ -15,7 +17,7 @@ public class DataHolder {
 	//Global variables
 	public static int[] fixedDimensions; // the 3 fixed dimension states (first is 3d, 2d then graph)
 	public static DataArray data; // the data class being used
-	
+	public static Float[] selectedPoint;
 	public static SliderMenu sliderMenu; // the slider menu frame
 	public static frmPlot plotter; // the 3d jframe
 	public static GraphScreen plotterGraph; // the graph Jframe
@@ -33,12 +35,18 @@ public class DataHolder {
 		fixedDimensions[2] = 2;
 		
 		data = new DataArray(10, 10, 10, 10, new String [] {"first", "second", "third", "forth"});
-		
-		sliderMenu = new SliderMenu();
-		plotter = new frmPlot();
-		plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
-		plotterGraph = new GraphScreen();
-		plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
+		SwingUtilities.invokeLater(
+				new Runnable(){
+					@Override
+					public void run(){
+						sliderMenu = new SliderMenu();
+						plotter = new frmPlot();
+						plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
+						plotterGraph = new GraphScreen();
+						plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
+					}
+				}
+		);
 	}
 	
 	/**
@@ -135,4 +143,20 @@ public class DataHolder {
 			return Float.MIN_VALUE;
 		}
 	}
+	/**
+	 * gets selected point
+	 * @return float[5]
+	 */
+	public static final Float[] getSelectedPoint() {
+		return selectedPoint;
+	}
+	/**
+	 * sets selected point (array must be 5 indices long)
+	 * @param selectedPoint
+	 */
+	public static void setSelectedPoint(Float[] selectedPoint) {
+		assert selectedPoint.length == 5;
+		DataHolder.selectedPoint = selectedPoint;
+	}
+	
 }
