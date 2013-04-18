@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLJPanel;
@@ -167,7 +168,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			gl.glVertex3d(globalMinX-axisOffset - majorTickLength,0,globalMinY-axisOffset + i);
 		}
 		gl.glEnd();
-		gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_LINE);
+		gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_LINE);
 		double stepX = 0, stepY = 0, stepH = 0;
 		switch(DataHolder.getFixedDimension(0)){
 		case 0:
@@ -177,14 +178,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			switch(DataHolder.getFixedDimension(1)){
 			case 1:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMaxH+axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 2:
 					gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(2)*stepH,-axisOffset-10);
@@ -200,14 +201,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 2:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 1:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -223,14 +224,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 3:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 1:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -253,14 +254,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			switch(DataHolder.getFixedDimension(1)){
 			case 0:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMaxH+axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 2:
 					gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(2)*stepH,-axisOffset-10);
@@ -276,14 +277,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 2:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 0:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -299,14 +300,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 3:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 0:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -329,14 +330,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			switch(DataHolder.getFixedDimension(1)){
 			case 0:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMaxH+axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 1:
 					gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(2)*stepH,-axisOffset-10);
@@ -352,14 +353,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 1:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 0:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -375,14 +376,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 3:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 0:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -405,14 +406,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			switch(DataHolder.getFixedDimension(1)){
 			case 0:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMaxH+axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY-axisOffset,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMinH-axisOffset);
 				gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 1:
 					gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH-axisOffset-10);
@@ -428,14 +429,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 1:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glVertex3d(globalMinX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH-axisOffset);
 				gl.glVertex3d(globalMaxX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH+axisOffset);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 0:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -451,14 +452,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				break;
 			case 2:
 				gl.glColor4f(0, 1, 0,0.2f);
-				gl.glBegin(gl.GL_QUADS);
+				gl.glBegin(GL2.GL_QUADS);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMinY-axisOffset,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMinX-axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glVertex3d(globalMaxX+axisOffset,globalMaxY,DataHolder.getFixedDimensionStep(1)*stepY);
 				gl.glEnd();
 				gl.glColor3f(1, 0, 1);
-				gl.glBegin(gl.GL_LINES);
+				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 0:
 					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,0,-axisOffset-10);
@@ -475,7 +476,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			}
 			break;
 		}
-		gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_FILL);
+		gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_FILL);
 		gl.glEnd();
 		gl.glEndList();
 	}
