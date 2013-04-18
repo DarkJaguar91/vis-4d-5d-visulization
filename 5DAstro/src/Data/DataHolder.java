@@ -47,7 +47,6 @@ public class DataHolder {
 	public static void updatePlotter(){
 		plotter.reload();
 		plotterGraph.plotGraph();
-		System.out.println(DataHolder.getMinFilter(4));
 	}
 	
 	/**
