@@ -354,28 +354,26 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 		float min = DataHolder.data.getMinData(dim);
 		float max = DataHolder.data.getMaxData(dim);
-		float step = 0;
-		if (dim != 4)
-			step = (max - min) / (DataHolder.data.getLength(dim));
-		else
-			step = (max - min) / 100;
 		
-		step = (float)Math.floor(step * 100f) / 100f;
+//		step = (float)Math.round(step * 100f) / 100f;
 		
 		if (slider instanceof RangeSlider){
 			RangeSlider s = (RangeSlider)slider;
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(s.getLowValue()), new JLabel("" + (s.getLowValue() + 1) *  step));
-			labels.put(new Integer(s.getHighValue()), new JLabel("" + (s.getHighValue() + 1) * step));
-			labels.put(new Integer(s.getMinimum()), new JLabel("" + (s.getMinimum()) * step));
-			labels.put(new Integer(s.getMaximum()), new JLabel("" + (s.getMaximum())* step));
+			float lowVal = min + (max - min) * (float)( (s.getLowValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
+			float highVal = min + (max - min) * (float)( (s.getHighValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
+			labels.put(new Integer(s.getLowValue()), new JLabel("" + lowVal));
+			labels.put(new Integer(s.getHighValue()), new JLabel("" + highVal));
+			labels.put(new Integer(s.getMinimum()), new JLabel("" + min));
+			labels.put(new Integer(s.getMaximum()), new JLabel("" + max));
 			s.setLabelTable(labels);
 		}
 		else{
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(slider.getValue()), new JLabel("" + (slider.getValue() + 1) * step));
-			labels.put(new Integer(slider.getMinimum()), new JLabel("" + (slider.getMinimum()) * step));
-			labels.put(new Integer(slider.getMaximum()), new JLabel("" + (slider.getMaximum()) * step));
+			float highVal = min + (max - min) * (float)( (slider.getValue() - slider.getMinimum()) / (float)(slider.getMaximum() - (float)slider.getMinimum()));
+			labels.put(new Integer(slider.getValue()), new JLabel("" + highVal));
+			labels.put(new Integer(slider.getMinimum()), new JLabel("" + min));
+			labels.put(new Integer(slider.getMaximum()), new JLabel("" + max));
 			slider.setLabelTable(labels);
 		}
 	}
