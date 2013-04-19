@@ -37,8 +37,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	// globals
 	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
 	public RangeSlider range1, range2, range3, range4, rangeHeat;
-	
-	// data holder global (for method calls)
+	JMenuItem loadFile, show3D, showGraph, Help;
 
 	public SliderMenu() {
 		super("Slider Menu");
@@ -170,10 +169,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 		// adding the Menu
 		JMenuBar bar = new JMenuBar();
-		JMenuItem loadFile = new JMenuItem("Load new File");
-		JMenuItem show3D = new JMenuItem("Show 3D Plotter");
-		JMenuItem showGraph = new JMenuItem("Show Graph Plotter");
-		JMenuItem Help = new JMenuItem("Help");
+		loadFile = new JMenuItem("Load new File");
+		show3D = new JMenuItem("Hide 3D Plotter");
+		showGraph = new JMenuItem("Hide Graph Plotter");
+		Help = new JMenuItem("Help");
 		bar.add(loadFile);
 		bar.add(show3D);
 		bar.add(showGraph);
@@ -188,13 +187,15 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		show3D.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				DataHolder.plotter.setVisible(true);				
+				DataHolder.plotter.setVisible(!DataHolder.plotter.isVisible());		
+				refreshButtons();
 			}
 		});
 		showGraph.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				DataHolder.plotterGraph.setVisible(true);				
+				DataHolder.plotterGraph.setVisible(!DataHolder.plotterGraph.isVisible());
+				refreshButtons();		
 			}
 		});
 		Help.addActionListener(new ActionListener() {
@@ -285,6 +286,12 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 //		this.setSize(this.getWidth() * 2, this.getHeight());
 	}
 
+	public void refreshButtons(){
+		// 3d
+		show3D.setText(DataHolder.plotter.isVisible() ? "Hide 3D Plotter" : "Show 3D Plotter");
+		// graph		
+		showGraph.setText(DataHolder.plotterGraph.isVisible() ? "Hide Graph Plotter" : "Show Graph Plotter");
+	}
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {
