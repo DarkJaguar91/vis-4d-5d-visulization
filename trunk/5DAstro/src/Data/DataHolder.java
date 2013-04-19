@@ -58,6 +58,13 @@ public class DataHolder {
 	}
 	
 	/**
+	 * Updates the hide and show buttons on the slider tab
+	 */
+	public static void refreshButtons(){
+		sliderMenu.refreshButtons();
+	}
+	
+	/**
 	 * Gets the fixed dimension for the specified plot (3d, 2d then graph) 
 	 * @param index The index (0 - 2)
 	 * @return The fixed dimension (0 - 3)

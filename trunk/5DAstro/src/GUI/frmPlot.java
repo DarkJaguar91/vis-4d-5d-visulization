@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -24,6 +26,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import Data.DataHolder;
 import Drawing3D.Plotter3D;
 
 public class frmPlot extends JFrame implements ActionListener,ChangeListener{
@@ -178,7 +181,40 @@ public class frmPlot extends JFrame implements ActionListener,ChangeListener{
 		super("3D Viewer");
 		setSize(800, 600);
 
-		setDefaultCloseOperation(HIDE_ON_CLOSE);
+this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
+		this.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				((JFrame)arg0.getSource()).setVisible(false);
+				DataHolder.refreshButtons();
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent arg0) {
+			}
+		});
 
 		//this.setExtendedState(MAXIMIZED_BOTH);
 		frmPlot = new Plotter3D();

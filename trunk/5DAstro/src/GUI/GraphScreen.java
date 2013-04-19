@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -47,7 +49,40 @@ public class GraphScreen extends JFrame{
 	public GraphScreen(){
 		super("Graph Plotter");
 		
-		this.setDefaultCloseOperation(HIDE_ON_CLOSE);
+this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
+		this.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				((JFrame)arg0.getSource()).setVisible(false);
+				DataHolder.refreshButtons();
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent arg0) {
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent arg0) {
+			}
+		});
 		
 		this.setSize(800, 600);
 		
