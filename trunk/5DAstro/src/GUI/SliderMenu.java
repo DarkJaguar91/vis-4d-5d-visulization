@@ -355,25 +355,27 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		float min = DataHolder.data.getMinData(dim);
 		float max = DataHolder.data.getMaxData(dim);
 		
-//		step = (float)Math.round(step * 100f) / 100f;
-		
 		if (slider instanceof RangeSlider){
 			RangeSlider s = (RangeSlider)slider;
 			Hashtable<Object, Object> labels = new Hashtable<>();
 			float lowVal = min + (max - min) * (float)( (s.getLowValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
 			float highVal = min + (max - min) * (float)( (s.getHighValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
 			labels.put(new Integer(s.getLowValue()), new JLabel("" + lowVal));
-			labels.put(new Integer(s.getHighValue()), new JLabel("" + highVal));
+			labels.put(new Integer(s.getHighValue()), new JLabel("" + highVal));			
 			labels.put(new Integer(s.getMinimum()), new JLabel("" + min));
 			labels.put(new Integer(s.getMaximum()), new JLabel("" + max));
 			s.setLabelTable(labels);
 		}
 		else{
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			float highVal = min + (max - min) * (float)( (slider.getValue() - slider.getMinimum()) / (float)(slider.getMaximum() - (float)slider.getMinimum()));
+			
+			float newmin = min + (max - min) * (float)( (slider.getMinimum() - 0) / (float)(DataHolder.data.getLength(dim)-1 - (float)0));
+			float newmax = min + (max - min) * (float)( (slider.getMaximum() - 0) / (float)(DataHolder.data.getLength(dim)-1 - (float)0));
+			
+			float highVal = newmin + (newmax - newmin) * (float)( (slider.getValue() - slider.getMinimum()) / (float)(slider.getMaximum() - (float)slider.getMinimum()));
 			labels.put(new Integer(slider.getValue()), new JLabel("" + highVal));
-			labels.put(new Integer(slider.getMinimum()), new JLabel("" + min));
-			labels.put(new Integer(slider.getMaximum()), new JLabel("" + max));
+			labels.put(new Integer(slider.getMinimum()), new JLabel("" + newmin));
+			labels.put(new Integer(slider.getMaximum()), new JLabel("" + newmax));
 			slider.setLabelTable(labels);
 		}
 	}
