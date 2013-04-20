@@ -150,15 +150,17 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		}
 		
 		// calculate the step in non-fixed dimension
-		float step = (DataHolder.data.getMaxData(odd) - DataHolder.data.getMinData(odd)) / DataHolder.data.getLength(odd);
-		step = (float)Math.floor(step * 100f) / 100f;
+		float max = DataHolder.data.getMaxData(odd);
+		float min = DataHolder.data.getMinData(odd);
+		
+		float dataMax = DataHolder.data.getLength(odd);
 		
 		// add each point into the series
 		for (int i = (int)DataHolder.getMinFilter(odd); i <= (int)DataHolder.getMaxFilter(odd); ++i){
 			// get the data from the array at the point
 			float temp = DataHolder.data.getData()[arrayIndexes[0] == -1 ? i : arrayIndexes[0]][arrayIndexes[1] == -1 ? i : arrayIndexes[1]][arrayIndexes[2] == -1 ? i : arrayIndexes[2]][arrayIndexes[3] == -1 ? i : arrayIndexes[3]];
 			if (temp >= DataHolder.getMinFilter(4) && temp <= DataHolder.getMaxFilter(4)) // if within specified temp range
-				series.add((i+1) * step, temp);
+				series.add(min + (max - min) * (float)(((i+1)) / (float)(dataMax)), temp);
 		}
 		
 		set.addSeries(series); // add the series to the set
