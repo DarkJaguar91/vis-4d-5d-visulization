@@ -5,6 +5,7 @@ import javax.swing.SwingUtilities;
 import GUI.GraphScreen;
 import GUI.SliderMenu;
 import GUI.frmPlot;
+import GUI.HM2DPlot;
 
 /**
  * 
@@ -21,6 +22,8 @@ public class DataHolder {
 	public static SliderMenu sliderMenu; // the slider menu frame
 	public static frmPlot plotter; // the 3d jframe
 	public static GraphScreen plotterGraph; // the graph Jframe
+	public static HM2DPlot hm2dGraph; // the heat-map Jframe
+	
 	
 	/**
 	 * Constructor
@@ -44,6 +47,9 @@ public class DataHolder {
 						plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 						plotterGraph = new GraphScreen();
 						plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
+
+						hm2dGraph = new HM2DPlot();
+						hm2dGraph.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 					}
 				}
 		);
@@ -55,6 +61,7 @@ public class DataHolder {
 	public static void updatePlotter(){
 		plotter.reload();
 		plotterGraph.plotGraph();
+		hm2dGraph.updateHMap(null,null);// System.err.println("update.");
 	}
 	
 	/**
