@@ -37,7 +37,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	// globals
 	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
 	public RangeSlider range1, range2, range3, range4, rangeHeat;
-	JMenuItem loadFile, show3D, showGraph, Help;
+	JMenuItem loadFile, show3D, showGraph, Help, showHMap, hm2dGraph;
 
 	public SliderMenu() {
 		super("Slider Menu");
@@ -172,10 +172,12 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		loadFile = new JMenuItem("Load new File");
 		show3D = new JMenuItem("Hide 3D Plotter");
 		showGraph = new JMenuItem("Hide Graph Plotter");
+		showHMap = new JMenuItem("Hide Heat Map");
 		Help = new JMenuItem("Help");
 		bar.add(loadFile);
 		bar.add(show3D);
 		bar.add(showGraph);
+		bar.add(showHMap);
 		bar.add(Help);
 		
 		loadFile.addActionListener(new ActionListener() {
@@ -198,10 +200,17 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 				refreshButtons();		
 			}
 		});
+		showHMap.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				DataHolder.hm2dGraph.setVisible(!DataHolder.hm2dGraph.isVisible());
+				refreshButtons();		
+			}
+		});
 		Help.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(DataHolder.sliderMenu, "Slider tooltips explain each sliders propertis.\n\n\nAbout:\nVisualizer for 4 Dimensional Array Data\n\nAuthors:\nBrandon James Talbot\nBenjamin Hugo\nHeinrich Straus", "Help", JOptionPane.INFORMATION_MESSAGE);				
+				JOptionPane.showMessageDialog(DataHolder.sliderMenu, "Slider tooltips explain each sliders propertis.\n\n\nAbout:\nVisualizer for 4 Dimensional Array Data\n\nAuthors:\nBrandon James Talbot\nBenjamin Hugo\nHeinrich Strauss", "Help", JOptionPane.INFORMATION_MESSAGE);				
 			}
 		});
 		
@@ -291,6 +300,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		show3D.setText(DataHolder.plotter.isVisible() ? "Hide 3D Plotter" : "Show 3D Plotter");
 		// graph		
 		showGraph.setText(DataHolder.plotterGraph.isVisible() ? "Hide Graph Plotter" : "Show Graph Plotter");
+		// heatmap
+		showHMap.setText(DataHolder.hm2dGraph.isVisible() ? "Hide Heat Map" : "Show Heat Map");
 	}
 	
 	@Override
