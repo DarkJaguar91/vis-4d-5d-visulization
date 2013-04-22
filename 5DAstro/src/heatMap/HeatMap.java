@@ -1,9 +1,12 @@
 package heatMap;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
 /**
  *
@@ -63,6 +66,10 @@ import javax.swing.*;
 
 public class HeatMap extends JPanel
 {
+	/**
+	 * Generated Serial version
+	 */
+	private static final long serialVersionUID = 3021032568685232247L;
 	private float[][] data;
 	private int[][] dataColorIndices;
 
