@@ -1,15 +1,11 @@
 package heatMap;
 
-import javax.imageio.ImageIO;
-import javax.swing.JColorChooser;
-
-import Data.DataArray;
-
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class HM2DGraph {
 	private final Color loColor = new Color(0,0,255);
@@ -27,6 +23,7 @@ public class HM2DGraph {
 		System.out.println("initialised HM2DGraph");
 	}*/
 
+	@SuppressWarnings("unused")
 	private void initialiseColours()
 	{
 		int i;
@@ -42,6 +39,7 @@ public class HM2DGraph {
 		// final element excluded from for loop above
 		scale[255] = new Color(hiColor.getRed(),hiColor.getGreen(),hiColor.getBlue());
 	}
+	@SuppressWarnings("unused")
 	private void initialiseImage(String path){
 		try {
 			internalMap = ImageIO.read(new File(path));

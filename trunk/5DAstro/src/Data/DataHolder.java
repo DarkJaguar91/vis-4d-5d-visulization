@@ -37,7 +37,7 @@ public class DataHolder {
 		fixedDimensions[1] = 1;
 		fixedDimensions[2] = 2;
 		
-		data = new DataArray(100, 100, 100, 100, new String [] {"first", "second", "third", "forth"});
+		data = new DataArray(50, 50, 50, 50, new String [] {"first", "second", "third", "forth"});
 		SwingUtilities.invokeLater(
 				new Runnable(){
 					@Override
@@ -45,11 +45,12 @@ public class DataHolder {
 						sliderMenu = new SliderMenu();
 						plotter = new frmPlot();
 						plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
-						plotterGraph = new GraphScreen();
-						plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
-
+						
 						hm2dGraph = new HM2DPlot();
 						hm2dGraph.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
+						
+						plotterGraph = new GraphScreen();
+						plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
 					}
 				}
 		);
@@ -61,7 +62,7 @@ public class DataHolder {
 	public static void updatePlotter(){
 		plotter.reload();
 		plotterGraph.plotGraph();
-		hm2dGraph.updateHMap(null,null);// System.err.println("update.");
+		hm2dGraph.updateHMap(null,null);
 	}
 	
 	/**
