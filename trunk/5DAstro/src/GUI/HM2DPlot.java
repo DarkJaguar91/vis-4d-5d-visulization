@@ -190,81 +190,58 @@ public class HM2DPlot extends JFrame{
 		panel.setColorForeground(Color.black);
 		panel.setColorBackground(Color.white);
 
-		this.previousSelections = new int[6]; // last values for fast fail redraw; have fixed dimensions or limits changed?
 		this.getContentPane().add(panel);
 		this.updateHMap();
 		this.setVisible(true);
 	}
 
 	public void updateHMap(){
-		updateHMap(null,null);
-
-	}
-	public void updateHMap(double[][] newdata, double[] values)
-	{
-
-		boolean fastfailredraw = false; // don't redraw unless the limits have changed
-
-		float incdata[][][][] = DataHolder.data.getData();
-		// int[] fixedDims = DataHolder.fixedDimensions.clone();
-
-		//Fixed Dimensions' dimensions: indices of fixed dimensions, low and high bounds
-		int fd0 = DataHolder.getFixedDimension(0);
-		int fd1 = DataHolder.getFixedDimension(1); 
-		float fd0l = DataHolder.getMinFilter(fd0);
-		float fd0h = DataHolder.getMaxFilter(fd0);
-		float fd1l = DataHolder.getMinFilter(fd1);
-		float fd1h = DataHolder.getMaxFilter(fd1);
-		int ifd0l = (int)fd0l;
-		int ifd0h = (int)fd0h;
-		int ifd1l = (int)fd1l;
-		int ifd1h = (int)fd1h;
-
-		// Get current selections to fast-fail redraw if unnecessary
-		int currentSelections[] = new int[6]; 
-		currentSelections[0] = fd0;
-		currentSelections[1] = fd0;
-		currentSelections[2] = ifd0l;
-		currentSelections[3] = ifd0h;
-		currentSelections[4] = ifd1l;
-		currentSelections[5] = ifd1h;
-
-		for (int i = 0; i< previousSelections.length;i++){
-			if (previousSelections[i] != currentSelections[i])
-				fastfailredraw = true;
-		}		
-		if(!fastfailredraw) 
-		{			
-			return;
+		int arraypositions [] = {-1, -1, -1, -1};
+		
+		arraypositions[DataHolder.getFixedDimension(0)] = DataHolder.getFixedDimensionStep(0);
+		arraypositions[DataHolder.getFixedDimension(1)] = DataHolder.getFixedDimensionStep(1);
+		
+		int out1 = -1, out2 = -1;
+		for (int i = 0; i < 4; ++i){
+			if (i != DataHolder.getFixedDimension(0) && i != DataHolder.getFixedDimension(1)){
+				if (out1 == -1){
+					out1 = i;
+					arraypositions[i] = -1;
+				}
+				else{
+					out2 = i;
+					arraypositions[i] = -2;
+				}
+			}
 		}
-
-		//update previousselections for redraw
-
-		previousSelections = currentSelections;
-
+		
 		//create reduced array of data
-		float[][] outData = new float[ifd1h-ifd1l][ifd0h-ifd0l]; //check if data in column [size] are lost
-		//		System.out.println("Setting coords: ("+ifd0l+","+ifd0h+","+ifd1l+","+ifd1h+")");
-
-		//		for (int arrj;arrj<;
-		//TODO: optimize HMap to use global data
-
-		//		System.out.println("Looping fd0 from "+ifd0l+":"+ifd0h+"; d0 length: "+outData[0].length);
-		//		System.out.println("Looping fd1 from "+ifd1l+":"+ifd1h+"; d1 length: "+outData.length);
-		for (int arrj=ifd1l;arrj<ifd1h;arrj++)
+		int size1 = ((int)DataHolder.getMaxFilter(out1) - (int)DataHolder.getMinFilter(out1));
+		int size2 = ((int)DataHolder.getMaxFilter(out2) - (int)DataHolder.getMinFilter(out2));
+		float[][] outData = new float[size2 + 1][size1 + 1];
+		
+		for (int i = (int)DataHolder.getMinFilter(out1); i <= (int)DataHolder.getMaxFilter(out1); ++i)
 		{
-			for (int arri=ifd0l;arri<ifd0h;arri++){
-				outData[arrj-ifd1l][arri-ifd0l] = (float)(incdata[fd0][fd1][arrj-ifd1l][arri-ifd0l] * (Math.random()+0.5)); //TODO: remove random once draw is proven
+			for (int y = (int)DataHolder.getMinFilter(out2); y <= (int)DataHolder.getMaxFilter(out2); ++y){
+				outData[y - (int)DataHolder.getMinFilter(out2)][i - (int)DataHolder.getMinFilter(out1)] = (float)(DataHolder.data.getData()[(arraypositions[0] == -1) ? i : ((arraypositions[0] == -2) ? y : arraypositions[0])]
+						[(arraypositions[1] == -1) ? i : ((arraypositions[1] == -2) ? y : arraypositions[1])]
+								[(arraypositions[2] == -1) ? i : ((arraypositions[2] == -2) ? y : arraypositions[2])]
+										[(arraypositions[3] == -1) ? i : ((arraypositions[3] == -2) ? y : arraypositions[3])]);
+//				System.out.println(outData[y][i]);
 			}
 		}
 
-		//		System.out.println("Setting coords: ("+fd0l+","+fd0h+","+fd1l+","+fd1h+")");
-		panel.setCoordinateBounds(fd0l,fd0h,fd1l,fd1h);
-
-		//panel.updateData(incdata[fd0][fd1], false);
-		panel.updateData(outData, false); 
+		float minx = DataHolder.data.getMinData(out1) + (DataHolder.data.getMaxData(out1) - DataHolder.data.getMinData(out1)) * (DataHolder.getMinFilter(out1) / (float)(DataHolder.data.getLength(out1)-1));
+		float maxx = DataHolder.data.getMinData(out1) + (DataHolder.data.getMaxData(out1) - DataHolder.data.getMinData(out1)) * (DataHolder.getMaxFilter(out1) / (float)(DataHolder.data.getLength(out1)-1));
+		float miny = DataHolder.data.getMinData(out2) + (DataHolder.data.getMaxData(out2) - DataHolder.data.getMinData(out2)) * (DataHolder.getMinFilter(out2) / (float)(DataHolder.data.getLength(out2)-1));
+		float maxy = DataHolder.data.getMinData(out2) + (DataHolder.data.getMaxData(out2) - DataHolder.data.getMinData(out2)) * (DataHolder.getMaxFilter(out2) / (float)(DataHolder.data.getLength(out2)-1));
 		
-
+		panel.setCoordinateBounds(miny, maxy, minx, maxx);
+	
+		panel.setYAxisTitle(DataHolder.data.getDimensionName(out1));
+		panel.setXAxisTitle(DataHolder.data.getDimensionName(out2));
+		
+		panel.updateData(outData, false);
 	}
 
 }
