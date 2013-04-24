@@ -35,18 +35,18 @@ public class DataHolder {
 	 * starts all frames
 	 */
 	public DataHolder (){
-		// set ui
+/*		// set ui
 		for (LookAndFeelInfo s : UIManager.getInstalledLookAndFeels()){
 			if (s.getName().toLowerCase().equals("nimbus"))
 				try {
 					UIManager.setLookAndFeel(s.getClassName());
 				} catch (ClassNotFoundException | InstantiationException
 						| IllegalAccessException
-						| UnsupportedLookAndFeelException e) {
+						| UnsupportedLookAndFeelException | NullPointerException e) {
 					e.printStackTrace();
 				}
 		}
-		
+		*/
 		fixedDimensions = new int[3];
 		fixedDimensions[0] = 0;
 		fixedDimensions[1] = 1;
