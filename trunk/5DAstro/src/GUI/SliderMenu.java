@@ -64,9 +64,9 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			chooser3D = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[0]);
 			chooser2D = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[1]);
 			chooserGraph = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[2]);
-			step3D = new JSlider(0, DataHolder.data.getLength(0) - 1, 0);
-			step2D = new JSlider(0, DataHolder.data.getLength(1) - 1, 0);
-			stepGraph = new JSlider(0, DataHolder.data.getLength(2) - 1, 0);
+			step3D = new JSlider(0, DataHolder.data.getLength(0)-1, 0);
+			step2D = new JSlider(0, DataHolder.data.getLength(1)-1, 0);
+			stepGraph = new JSlider(0, DataHolder.data.getLength(2)-1, 0);
 			
 			// add change listener
 			chooser2D.addMouseListener(this);
@@ -376,7 +376,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		if (slider instanceof RangeSlider){
 			RangeSlider s = (RangeSlider)slider;
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			float lowVal = min + (max - min) * (float)( (s.getLowValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
+			float lowVal = min + (max - min) * (float)((s.getLowValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
 			float highVal = min + (max - min) * (float)( (s.getHighValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
 			labels.put(new Integer(s.getLowValue()), new JLabel("" + lowVal));
 			labels.put(new Integer(s.getHighValue()), new JLabel("" + highVal));			
@@ -387,8 +387,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		else{
 			Hashtable<Object, Object> labels = new Hashtable<>();
 			
-			float newmin = min + (max - min) * (float)( (slider.getMinimum() - 0) / (float)(DataHolder.data.getLength(dim)-1 - (float)0));
-			float newmax = min + (max - min) * (float)( (slider.getMaximum() - 0) / (float)(DataHolder.data.getLength(dim)-1 - (float)0));
+			float newmin = min + (max - min) * (float)( (slider.getMinimum() - 0) / (float)(DataHolder.data.getLength(dim)-1));
+			float newmax = min + (max - min) * (float)( (slider.getMaximum() - 0) / (float)(DataHolder.data.getLength(dim)-1));
 			
 			float highVal = newmin + (newmax - newmin) * (float)( (slider.getValue() - slider.getMinimum()) / (float)(slider.getMaximum() - (float)slider.getMinimum()));
 			labels.put(new Integer(slider.getValue()), new JLabel("" + highVal));

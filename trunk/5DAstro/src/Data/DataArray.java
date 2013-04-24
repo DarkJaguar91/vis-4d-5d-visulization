@@ -65,8 +65,12 @@ public class DataArray {
 		maxData = new float[5];
 		for (int i = 0; i < 4; ++i){
 			minData[i] = 0;
-			maxData[i] = 99;
 		}
+		
+		maxData[0] = data.length-1;
+		maxData[1] = data[0].length-1;
+		maxData[2] = data[0][0].length-1;
+		maxData[3] = data[0][0][0].length-1;
 		
 		minData[4] = Float.MAX_VALUE;
 		maxData[4] = Float.MIN_VALUE;
