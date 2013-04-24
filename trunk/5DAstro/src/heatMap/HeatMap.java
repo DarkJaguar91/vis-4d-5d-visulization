@@ -8,6 +8,8 @@ import java.text.DecimalFormat;
 
 import javax.swing.JPanel;
 
+import Data.DataHolder;
+
 /**
  *
  * <p><strong>Title:</strong> HeatMap</p>
@@ -93,9 +95,13 @@ public class HeatMap extends JPanel
 	private Color[] colors;
 	private Color bg = Color.white;
 	private Color fg = Color.black;
+	private Color pbg = this.getBackground();
 
 	private BufferedImage bufferedImage;
 	private Graphics2D bufferedGraphics;
+	
+	private float tempSmallest = Float.MIN_VALUE;
+	private float tempLargest = Float.MAX_VALUE;
 
 	/**
 	 * @param data The data to display, must be a complete array (non-ragged)
@@ -362,14 +368,20 @@ public class HeatMap extends JPanel
 		// in order to assign proper colors.
 		float largest = Float.MIN_VALUE;
 		float smallest = Float.MAX_VALUE;
+		/*float tempLargest = DataHolder.getMaxFilter(4);
+		float tempSmallest = DataHolder.getMinFilter(4);*/
+		
 		for (int x = 0; x < data.length; x++)
 		{
 			for (int y = 0; y < data[0].length; y++)
 			{
-				largest = Math.max(data[x][y], largest);
-				smallest = Math.min(data[x][y], smallest);
+				//if (data[x][y] >= 0) {
+				largest = Math.max(Math.abs(data[x][y]), largest);
+				smallest = Math.min(Math.abs(data[x][y]), smallest);
+				//}
 			}
 		}
+
 		float range = largest - smallest;
 
 		// dataColorIndices is the same size as the data array
@@ -381,11 +393,14 @@ public class HeatMap extends JPanel
 		{
 			for (int y = 0; y < data[0].length; y++)
 			{
-				float norm = (float)(data[x][y] - smallest) / range; // 0 < norm < 1
+				float norm = (float)(Math.abs(data[x][y]) - smallest) / range; // 0 < norm < 1
 				int colorIndex = (int) Math.floor(norm * (colors.length - 1));
+				// if (data[x][y] < 0) System.out.println(""+colorIndex+"; dataCI: "+dataColorIndices[x][y]);
 				dataColorIndices[x][y] = colorIndex;
 			}
 		}
+		tempSmallest = smallest;
+		tempLargest = largest;
 	}
 
 	/**
@@ -482,6 +497,11 @@ public class HeatMap extends JPanel
 	 */
 	public void updateData(float[][] data, boolean useGraphicsYAxis)
 	{
+		
+
+		tempLargest = DataHolder.getMaxFilter(4);
+		tempSmallest = DataHolder.getMinFilter(4);
+		
 		this.data = new float[data.length][data[0].length];
 		for (int ix = 0; ix < data.length; ix++)
 		{
@@ -490,11 +510,14 @@ public class HeatMap extends JPanel
 				// we use the graphics Y-axis internally
 				if (useGraphicsYAxis)
 				{
-					this.data[ix][iy] = data[ix][iy];
+					this.data[ix][iy] = (data[ix][iy]>tempLargest)?tempLargest:(data[ix][iy]<tempSmallest)?tempSmallest:data[ix][iy];
+//					this.data[ix][iy] = data[ix][iy];
 				}
 				else
 				{
-					this.data[ix][iy] = data[ix][data[0].length - iy - 1];
+				//	this.data[ix][iy] = data[ix][data[0].length - iy - 1];
+					this.data[ix][iy] = (data[ix][data[0].length - iy - 1]>tempLargest)?((float)((-1)*(tempLargest))):(data[ix][data[0].length - iy - 1]<tempSmallest)?((float)((-1)*(tempSmallest))):data[ix][data[0].length - iy - 1];
+//					this.data[ix][iy] = data[ix][data[0].length - iy - 1];
 				}
 			}
 		}
@@ -536,6 +559,9 @@ public class HeatMap extends JPanel
 			for (int y = 0; y < data[0].length; y++)
 			{
 				bufferedGraphics.setColor(colors[dataColorIndices[x][y]]);
+				if (data[x][y] < 0)
+				  bufferedGraphics.setColor(pbg);
+				
 				bufferedGraphics.fillRect(x, y, 1, 1);
 			}
 		}
