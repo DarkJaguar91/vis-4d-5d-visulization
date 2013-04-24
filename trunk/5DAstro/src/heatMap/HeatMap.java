@@ -647,12 +647,15 @@ public class HeatMap extends JPanel
 				g2d.rotate( -Math.PI / 2);
 			}
 			
-			for (int y = 0; y < data[0].length; y++) {
+			int gmf = (int)(DataHolder.getMinFilter(DataHolder.getFixedDimension(2)));
+			int steps = (int)(DataHolder.getMaxFilter(DataHolder.getFixedDimension(2)) - DataHolder.getMinFilter(DataHolder.getFixedDimension(2)))+1;
+			for (int y = 0; y < steps; y++) {
 
-				if (y == selected) // indicate the step over the bg (and fg)
+				if ((y+gmf) == selected) // indicate the step over the bg (and fg)
 				{
-					int offsetY = height - 27 - (int)((y+1) * (height-60)/(1.0*data[0].length));
-					System.out.println("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
+
+					int offsetY = height - 30 - (int)((y+0.5) * (height-60)/(1.0*steps));
+					// System.out.println("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
 					g2d.setColor(bg);
 					g2d.fillRect(31, offsetY + 1 , width-90,1);
 					g2d.setColor(Color.red);
