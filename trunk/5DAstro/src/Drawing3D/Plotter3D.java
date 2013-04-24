@@ -781,7 +781,6 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glDepthFunc(GL_LEQUAL);  // the type of depth test to do
 		gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // best perspective correction
 		gl.glShadeModel(GL_SMOOTH);
-		gl.glPointSize(5);
 		gl.glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		gl.glPointSize(2);
 	}
@@ -843,9 +842,40 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 
 		//Draw points
 		gl.glCallList(pointsList);
+		//draw selected point in white:
+				if (DataHolder.getSelectedPoint() != null){
+					gl.glColor3f(1, 1, 1);
+					gl.glPointSize(5);
+					gl.glBegin(GL_POINTS);
+					switch(DataHolder.getFixedDimension(0)){
+					case 0:
+						gl.glVertex3d(DataHolder.getSelectedPoint()[1],
+								DataHolder.getSelectedPoint()[2],
+								DataHolder.getSelectedPoint()[3]);
+						break;
+					case 1:
+						gl.glVertex3d(DataHolder.getSelectedPoint()[0],
+								DataHolder.getSelectedPoint()[2],
+								DataHolder.getSelectedPoint()[3]);
+						break;
+					case 2:
+						gl.glVertex3d(DataHolder.getSelectedPoint()[0],
+								DataHolder.getSelectedPoint()[1],
+								DataHolder.getSelectedPoint()[3]);
+						break;
+					case 3:
+						gl.glVertex3d(DataHolder.getSelectedPoint()[0],
+								DataHolder.getSelectedPoint()[1],
+								DataHolder.getSelectedPoint()[2]);
+						break;
+					}
+					gl.glEnd();
+					gl.glPointSize(2);
+				}
 		//Draw the rotating text on the rulers:
 		gl.glCallList(axisList);
 		drawRullerText(gl);
+		
 		//Draw color range:
 		gl.glMatrixMode(GL_PROJECTION); //setup ortho in the projection matrix
 		gl.glPushMatrix(); //save perspective matrix
@@ -865,7 +895,18 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glVertex2f(getWidth(),0);
 		gl.glVertex2f(getWidth(),15f);
 		gl.glEnd();
-		//draw min and max as text on the strip:
+		gl.glColor3f(1, 1, 1);
+		if (DataHolder.getSelectedPoint() != null){
+			//Draw triangle at the heat of the selected point:
+			double xMid = (DataHolder.getSelectedPoint()[4]-DataHolder.data.getMinData(4))/(DataHolder.data.getMaxData(4)-DataHolder.data.getMinData(4))*getWidth();
+			gl.glBegin(GL2.GL_TRIANGLES);
+			gl.glVertex2d(xMid-5, 20);
+			gl.glVertex2d(xMid, 15);
+			gl.glVertex2d(xMid+5, 20);
+			gl.glEnd();
+		}
+		
+		//draw min, max and selected heat as text on the strip:
 		gl.glColor3f(1, 1, 1);
 		gl.glDisable(GL_DEPTH_TEST);
 		gl.glRasterPos2i(3, 3);
@@ -873,6 +914,25 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		String max = String.format("%.3f%n", DataHolder.data.getMaxData(4));
 		gl.glRasterPos2i(getWidth()-max.length()*5, 3);
 		glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_10, ""+max);
+		//draw heat text
+		if (DataHolder.getSelectedPoint() != null){
+			String heat = String.format("%.3f%n", DataHolder.getSelectedPoint()[4]);
+			float x = (DataHolder.getSelectedPoint()[4]-DataHolder.data.getMinData(4))/(DataHolder.data.getMaxData(4)-DataHolder.data.getMinData(4))*getWidth()
+					-heat.length()*3/2;
+			float overlap = x <= 0 ? x : 
+				x+heat.length()*4 > getWidth() ? x+heat.length()*4 - getWidth() : 0;
+			gl.glColor3f(0, 0, 0);
+			gl.glBegin(GL2.GL_QUADS);
+			gl.glVertex2d(x, 35);
+			gl.glVertex2d(x, 25);
+			gl.glVertex2d(x+heat.length()*4, 25);
+			gl.glVertex2d(x+heat.length()*4, 35);
+			gl.glEnd();
+			gl.glColor3f(1, 1, 1);
+			gl.glRasterPos2i((int)Math.ceil(x - overlap), 
+					25);
+			glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_10, ""+heat);
+		}
 		gl.glEnable(GL_DEPTH_TEST);
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glPopMatrix(); //back to perspective matrix
@@ -907,7 +967,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		
+		select(arg0);
 	}
 	/**
 	 * Selects a point in 3D space by unprojecting the cursor point on the near and far planes and then
@@ -957,7 +1017,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 5)
+						if (dist < 1)
 							pointList.add(pt);
 					}
 			break;
@@ -989,7 +1049,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 5)
+						if (dist < 1)
 							pointList.add(pt);
 					}
 			break;
@@ -1021,7 +1081,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 5)
+						if (dist < 1)
 							pointList.add(pt);
 					}
 			break;
@@ -1053,7 +1113,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 5)
+						if (dist < 1)
 							pointList.add(pt);
 					}
 			break;
@@ -1118,10 +1178,10 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			}
 		}
 		DataHolder.setSelectedPoint(ptNearest);
-		if (ptNearest != null)
+		/*if (ptNearest != null)
 			((frmPlot)this.getParent().getParent().getParent().getParent()).setTitle(
 					String.format("3D Viewer --- Selected [%.3f%n,%.3f%n,%.3f%n,%.3f%n,%.3f%n]", 
-					ptNearest[0],ptNearest[1],ptNearest[2],ptNearest[3],ptNearest[4]));
+					ptNearest[0],ptNearest[1],ptNearest[2],ptNearest[3],ptNearest[4]));*/
 		/*double vLength = Math.sqrt(vX*vX + vY*vY + vZ*vZ);		
 		vX = vX / vLength;
 		vY = vY / vLength;
@@ -1154,8 +1214,6 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			prevX = arg0.getX();
 			prevY = arg0.getY();
 			isMouseRightDown = true;
-		} else if (arg0.getButton() == MouseEvent.BUTTON1){
-			select(arg0);
 		}
 	}
 
