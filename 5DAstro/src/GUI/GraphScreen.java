@@ -201,5 +201,5 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// repaint the frame
 		repaint();
 	}
-	
+
 }

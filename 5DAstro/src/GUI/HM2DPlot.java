@@ -158,7 +158,7 @@ public class HM2DPlot extends JFrame{
 		//	        int[] dl = data.length;
 		//	        for int j = 0; j< data[0][data.length-1];
 
-		this.setSize(650, 670); // 640x640 + padding
+		this.setSize(680, 670); // 640x640 + padding; +30 for legend indices
 
 		data = HeatMap.generatePyramidData(100);
 		boolean useGraphicsYAxis = true;

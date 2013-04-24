@@ -567,6 +567,10 @@ public class HeatMap extends JPanel
 				bufferedGraphics.fillRect(x, y, 1, 1);
 			}
 		}
+		
+		// Find the location on the dimension that is not plotted the 2D Graph and indicate it 
+		//int graphFixed = DataHolder.getFixedDimension(DataHolder.plotterGraph.getFixedDimension());
+		//System.out.println("Graph Fixed: "+graphFixed);
 	}
 
 	/**
@@ -602,7 +606,7 @@ public class HeatMap extends JPanel
 		// redrew the data plot each time we had to repaint the screen.
 		g2d.drawImage(bufferedImage,
 				31, 31,
-				width - 30,
+				width - 60,
 				height - 30,
 				0, 0,
 				bufferedImage.getWidth(), bufferedImage.getHeight(),
@@ -610,7 +614,7 @@ public class HeatMap extends JPanel
 
 		// border
 		g2d.setColor(fg);
-		g2d.drawRect(30, 30, width - 60, height - 60);
+		g2d.drawRect(30, 30, width - 90, height - 60);
 
 		// title
 		if (drawTitle && title != null)
@@ -619,7 +623,7 @@ public class HeatMap extends JPanel
 		}
 
 		// axis ticks - ticks start even with the bottom left coner, end very close to end of line (might not be right on)
-		int numXTicks = (width - 60) / 50;
+		int numXTicks = (width - 90) / 50;
 		int numYTicks = (height - 60) / 50;
 
 		String label = "";
@@ -628,16 +632,34 @@ public class HeatMap extends JPanel
 		// Y-Axis ticks
 		if (drawYTicks)
 		{
+			int selected = DataHolder.getFixedDimensionStep(DataHolder.getFixedDimension(2));
 			int yDist = (int) ((height - 60) / (float) numYTicks); //distance between ticks
 			for (int y = 0; y <= numYTicks; y++)
 			{
+			
 				g2d.drawLine(26, height - 30 - y * yDist, 30, height - 30 - y * yDist);
+				
 				label = df.format(((y / (float) numYTicks) * (yMax - yMin)) + yMin);
 				int labelY = height - 30 - y * yDist - 4 * label.length();
 				//to get the text to fit nicely, we need to rotate the graphics
 				g2d.rotate(Math.PI / 2);
 				g2d.drawString(label, labelY, -14);
 				g2d.rotate( -Math.PI / 2);
+			}
+			
+			for (int y = 0; y < data[0].length; y++) {
+
+				if (y == selected) // indicate the step over the bg (and fg)
+				{
+					int offsetY = height - 27 - (int)((y+1) * (height-60)/(1.0*data[0].length));
+					System.out.println("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
+					g2d.setColor(bg);
+					g2d.fillRect(31, offsetY + 1 , width-90,1);
+					g2d.setColor(Color.red);
+					g2d.fillRect(26, offsetY , 5,3);
+					g2d.fillRect(width-60, offsetY , 5,3);
+					g2d.setColor(fg);
+				}
 			}
 		}
 
@@ -647,14 +669,17 @@ public class HeatMap extends JPanel
 			//to get the text to fit nicely, we need to rotate the graphics
 			g2d.rotate(Math.PI / 2);
 			g2d.drawString(yAxis, (height / 2) - 4 * yAxis.length(), -3);
-			g2d.rotate( -Math.PI / 2);
+			g2d.rotate(-Math.PI);
+			g2d.drawString("Temperature", (height / 2) - 4 * "Temperature".length(), -30);
+			g2d.rotate(Math.PI / 2);
+			
 		}
 
 
 		// X-Axis ticks
 		if (drawXTicks)
 		{
-			int xDist = (int) ((width - 60) / (float) numXTicks); //distance between ticks
+			int xDist = (int) ((width - 90) / (float) numXTicks); //distance between ticks
 			for (int x = 0; x <= numXTicks; x++)
 			{
 				g2d.drawLine(30 + x * xDist, height - 30, 30 + x * xDist, height - 26);
@@ -681,14 +706,23 @@ public class HeatMap extends JPanel
                 g2d.setColor(colors[(int) ((x / (float) (width - 60)) * (colors.length * 1.0))]);
                 g2d.fillRect(xStart, height - 19, 1, 9);
             }*/
-			g2d.drawRect(width - 20, 30, 10, height - 60);
+			g2d.drawRect(width - 50, 30, 10, height - 60);
 			for (int y = 0; y < height - 61; y++)
 			{
 				int yStart = height - 31 - (int) Math.ceil(y * ((height - 60) / (colors.length * 1.0)));
 				yStart = height - 31 - y;
 				g2d.setColor(colors[(int) ((y / (float) (height - 60)) * (colors.length * 1.0))]);
-				g2d.fillRect(width - 19, yStart, 9, 1);
+				g2d.fillRect(width - 49, yStart, 9, 1);
 			}
+			String labelMin = df.format(Math.abs(tempSmallest)); //"0"; // df.format(((y / (float) numXTicks) * (xMax - xMin)) + xMin);
+			String labelMax = df.format(Math.abs(tempLargest)); //"10";// df.format(((y / (float) numXTicks) * (xMax - xMin)) + xMin);
+			int labelMinY = height - 35; //(31 + x * xDist) - 4 * labelMin.length();
+			int labelMaxY = 40; //(31 + x * xDist) - 4 * labelMin.length();
+			g2d.setColor(fg);
+			g2d.drawString(labelMin, width - 35, labelMinY);
+			g2d.drawString(labelMax, width - 35, labelMaxY);
+
 		}
+		
 	}
 }
