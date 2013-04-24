@@ -1,6 +1,5 @@
 package Drawing3D;
 import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
-
 import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static javax.media.opengl.GL.GL_DEPTH_TEST;
 import static javax.media.opengl.GL.GL_LEQUAL;
@@ -33,7 +32,7 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.SwingUtilities;
 
 import Data.DataHolder;
-import GUI.frmPlot;
+
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
 /**
