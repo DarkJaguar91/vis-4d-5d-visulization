@@ -1,14 +1,11 @@
 package Data;
 
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import GUI.GraphScreen;
+import GUI.HM2DPlot;
 import GUI.SliderMenu;
 import GUI.frmPlot;
-import GUI.HM2DPlot;
 
 /**
  * 
@@ -35,18 +32,17 @@ public class DataHolder {
 	 * starts all frames
 	 */
 	public DataHolder (){
-/*		// set ui
-		for (LookAndFeelInfo s : UIManager.getInstalledLookAndFeels()){
-			if (s.getName().toLowerCase().equals("nimbus"))
-				try {
-					UIManager.setLookAndFeel(s.getClassName());
-				} catch (ClassNotFoundException | InstantiationException
-						| IllegalAccessException
-						| UnsupportedLookAndFeelException | NullPointerException e) {
-					e.printStackTrace();
-				}
-		}
-		*/
+		// set ui
+//		for (LookAndFeelInfo s : UIManager.getInstalledLookAndFeels())
+//			if (s.getName().toLowerCase().equals("nimbus"))
+//				try {
+//					UIManager.setLookAndFeel(s.getClassName());
+//				} catch (ClassNotFoundException | InstantiationException
+//						| IllegalAccessException
+//						| UnsupportedLookAndFeelException | NullPointerException e) {
+//					e.printStackTrace();
+//				}
+		
 		fixedDimensions = new int[3];
 		fixedDimensions[0] = 0;
 		fixedDimensions[1] = 1;
