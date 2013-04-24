@@ -227,7 +227,6 @@ public class HM2DPlot extends JFrame{
 						[(arraypositions[1] == -1) ? i : ((arraypositions[1] == -2) ? y : arraypositions[1])]
 								[(arraypositions[2] == -1) ? i : ((arraypositions[2] == -2) ? y : arraypositions[2])]
 										[(arraypositions[3] == -1) ? i : ((arraypositions[3] == -2) ? y : arraypositions[3])]);
-//				System.out.println(outData[y][i]);
 			}
 		}
 

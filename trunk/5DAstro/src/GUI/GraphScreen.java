@@ -186,9 +186,9 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		plot.setRangeGridlinePaint(gridOn ? Color.gray : Color.white); // makes it invis
 
 		// create renderer
-		final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+		final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)plot.getRenderer();
 		renderer.setSeriesLinesVisible(0, showLine);
-		renderer.setSeriesShapesVisible(1, true);
+		renderer.setSeriesShapesVisible(0, true);
 		plot.setRenderer(renderer);
 
 		// draw the ticks

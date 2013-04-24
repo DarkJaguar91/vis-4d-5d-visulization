@@ -366,21 +366,21 @@ public class HeatMap extends JPanel
 	{
 		//We need to find the range of the data values,
 		// in order to assign proper colors.
-		float largest = Float.MIN_VALUE;
-		float smallest = Float.MAX_VALUE;
+		float largest = DataHolder.data.getMaxData(4);
+		float smallest = DataHolder.data.getMinData(4);
 		/*float tempLargest = DataHolder.getMaxFilter(4);
 		float tempSmallest = DataHolder.getMinFilter(4);*/
 		
-		for (int x = 0; x < data.length; x++)
-		{
-			for (int y = 0; y < data[0].length; y++)
-			{
-				//if (data[x][y] >= 0) {
-				largest = Math.max(Math.abs(data[x][y]), largest);
-				smallest = Math.min(Math.abs(data[x][y]), smallest);
-				//}
-			}
-		}
+//		for (int x = 0; x < data.length; x++)
+//		{
+//			for (int y = 0; y < data[0].length; y++)
+//			{
+//				//if (data[x][y] >= 0) {
+//				largest = Math.max(Math.abs(data[x][y]), largest);
+//				smallest = Math.min(Math.abs(data[x][y]), smallest);
+//				//}
+//			}
+//		}
 
 		float range = largest - smallest;
 
@@ -507,17 +507,19 @@ public class HeatMap extends JPanel
 		{
 			for (int iy = 0; iy < data[0].length; iy++)
 			{
-				// we use the graphics Y-axis internally
-				if (useGraphicsYAxis)
-				{
-					this.data[ix][iy] = (data[ix][iy]>tempLargest)?tempLargest:(data[ix][iy]<tempSmallest)?tempSmallest:data[ix][iy];
+//				// we use the graphics Y-axis internally
+//				if (useGraphicsYAxis)
+//				{
 //					this.data[ix][iy] = data[ix][iy];
-				}
-				else
+//				}
+//				else
 				{
-				//	this.data[ix][iy] = data[ix][data[0].length - iy - 1];
-					this.data[ix][iy] = (data[ix][data[0].length - iy - 1]>tempLargest)?((float)((-1)*(tempLargest))):(data[ix][data[0].length - iy - 1]<tempSmallest)?((float)((-1)*(tempSmallest))):data[ix][data[0].length - iy - 1];
-//					this.data[ix][iy] = data[ix][data[0].length - iy - 1];
+					float datapnt = data[ix][data[0].length - iy - 1];
+					if (datapnt > tempLargest)
+						datapnt = -1;
+					if (datapnt < tempSmallest)
+						datapnt = -1;
+					this.data[ix][iy] = datapnt;
 				}
 			}
 		}
