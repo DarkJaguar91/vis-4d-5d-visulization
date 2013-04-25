@@ -39,7 +39,7 @@ public class DataArray {
 			for (int x = 0; x < dim2; ++x)
 				for (int y = 0; y < dim3; ++y)
 					for (int v = 0; v < dim4; ++v){
-						data[i][x][y][v] = r.nextFloat() * 100;
+						data[i][x][y][v] = r.nextFloat() * 1001;
 					}
 		calculateData();
 	}

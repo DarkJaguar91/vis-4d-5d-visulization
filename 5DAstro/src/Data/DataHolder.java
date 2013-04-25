@@ -24,7 +24,6 @@ public class DataHolder {
 	public static GraphScreen plotterGraph; // the graph Jframe
 	public static HM2DPlot hm2dGraph; // the heat-map Jframe
 	
-	
 	/**
 	 * Constructor
 	 * initialises
@@ -39,7 +38,7 @@ public class DataHolder {
 //					UIManager.setLookAndFeel(s.getClassName());
 //				} catch (ClassNotFoundException | InstantiationException
 //						| IllegalAccessException
-//						| UnsupportedLookAndFeelException | NullPointerException e) {
+//						| UnsupportedLookAndFeelException e) {
 //					e.printStackTrace();
 //				}
 		
@@ -48,7 +47,7 @@ public class DataHolder {
 		fixedDimensions[1] = 1;
 		fixedDimensions[2] = 2;
 		
-		data = new DataArray(50, 50, 50, 50, new String [] {"first", "second", "third", "forth"});
+		data = new DataArray(20, 20, 20, 20, new String [] {"first", "second", "third", "forth"});
 		SwingUtilities.invokeLater(
 				new Runnable(){
 					@Override
@@ -120,6 +119,7 @@ public class DataHolder {
 	 * @return float value for minimum "value" of dimension
 	 */
 	public static float getMinFilter(int index){
+		assert index <= 4;
 		if (index == 0){
 			return sliderMenu.range1.getLowValue();
 		}
@@ -149,6 +149,7 @@ public class DataHolder {
 	 * @return float value for maximum "value" of dimension
 	 */
 	public static float getMaxFilter(int index){
+		assert index <= 4;
 		if (index == 0){
 			return sliderMenu.range1.getHighValue();
 		}
