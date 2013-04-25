@@ -227,7 +227,7 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	        g2.setStroke(getItemStroke(series, item));
 	        Color c1 = getItemColor(series, item);
 	        Color c2 = getItemColor(series, item - 1);
-	        GradientPaint linePaint = new GradientPaint(0, 0, c1, 0, 300, c2);
+	        GradientPaint linePaint = new GradientPaint(0, 0, c1, 0, 10, c2);
 	        g2.setPaint(linePaint);
 	        g2.draw(shape);
 	    }
