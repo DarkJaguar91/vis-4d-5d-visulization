@@ -1,5 +1,10 @@
 package GUI;
 
+import heatMap.Gradient;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -13,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.ChangeEvent;
@@ -38,7 +44,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
 	public RangeSlider range1, range2, range3, range4, rangeHeat;
 	JMenuItem loadFile, show3D, showGraph, Help, showHMap, hm2dGraph;
-
+	JPanel heatColourRange;
+	
 	public SliderMenu() {
 		super("Slider Menu");
 
@@ -216,8 +223,30 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 		this.setJMenuBar(bar);		
 		
-		// placement (Layout)
-//		setSize(800, 720);
+		
+		heatColourRange = new JPanel(){
+			/**
+			 * Serial ID for panel
+			 */
+			private static final long serialVersionUID = 8689446790433294288L;
+			
+			@Override
+			public void paint(Graphics g){
+				Color[] gradientColors = new Color[]{Color.blue, Color.yellow, Color.red};
+				Color[] colors = Gradient.createMultiGradient(gradientColors, 101);
+				
+				Graphics2D g2 = (Graphics2D)g;
+				
+				int bwidth = (int)(this.getWidth() / 101);
+				
+				for (int i = 0; i < colors.length; ++i){
+					g2.setColor(colors[i]);
+					g2.fillRect(bwidth * i, 0, bwidth, this.getHeight());
+				}
+			}
+		};
+		
+		// placement (Layout) ////////////
 		GroupLayout layout = new GroupLayout(this.getContentPane());
 		this.getContentPane().setLayout(layout);
 		
