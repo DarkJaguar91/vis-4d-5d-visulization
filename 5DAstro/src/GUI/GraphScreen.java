@@ -21,7 +21,6 @@ import javax.swing.JMenuItem;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
@@ -168,7 +167,6 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// add each point into the series
 		for (int i = (int)DataHolder.getMinFilter(odd); i <= (int)DataHolder.getMaxFilter(odd); ++i){
 			// get the data from the array at the point
-			System.out.println(i);
 			float temp = DataHolder.data.getData()[arrayIndexes[0] == -1 ? i : arrayIndexes[0]][arrayIndexes[1] == -1 ? i : arrayIndexes[1]][arrayIndexes[2] == -1 ? i : arrayIndexes[2]][arrayIndexes[3] == -1 ? i : arrayIndexes[3]];
 			if (temp >= DataHolder.getMinFilter(4) && temp <= DataHolder.getMaxFilter(4)) // if within specified temp range
 				series.add(min + (max - min) * (float)(((i)) / (float)(dataMax)), temp);
