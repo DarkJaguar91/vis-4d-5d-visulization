@@ -1,10 +1,5 @@
 package GUI;
 
-import heatMap.Gradient;
-
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -25,8 +20,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import Data.DataHolder;
-
-import com.jidesoft.swing.RangeSlider;
+import Slider.JRangeSlider;
+import Slider.JRangeSliderGradient;
 
 /**
  * 
@@ -42,7 +37,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 
 	// globals
 	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
-	public RangeSlider range1, range2, range3, range4, rangeHeat;
+	public JRangeSlider range1, range2, range3, range4;
+	public JRangeSliderGradient rangeHeat;
 	JMenuItem loadFile, show3D, showGraph, Help, showHMap, hm2dGraph;
 	JPanel heatColourRange;
 	
@@ -129,11 +125,11 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// Range selector setup
 		{
 			// initialize
-			range1 = new RangeSlider(0, DataHolder.data.getLength(0)-1, 0, DataHolder.data.getLength(0)-1);
-			range2 = new RangeSlider(0, DataHolder.data.getLength(1)-1, 0, DataHolder.data.getLength(1)-1);
-			range3 = new RangeSlider(0, DataHolder.data.getLength(2)-1, 0, DataHolder.data.getLength(2)-1);
-			range4 = new RangeSlider(0, DataHolder.data.getLength(3)-1, 0, DataHolder.data.getLength(3)-1);
-			rangeHeat = new RangeSlider(0, 100, 0, 100);
+			range1 = new JRangeSlider(0, DataHolder.data.getLength(0)-1, 0, DataHolder.data.getLength(0)-1);
+			range2 = new JRangeSlider(0, DataHolder.data.getLength(1)-1, 0, DataHolder.data.getLength(1)-1);
+			range3 = new JRangeSlider(0, DataHolder.data.getLength(2)-1, 0, DataHolder.data.getLength(2)-1);
+			range4 = new JRangeSlider(0, DataHolder.data.getLength(3)-1, 0, DataHolder.data.getLength(3)-1);
+			rangeHeat = new JRangeSliderGradient(0, 100, 0, 100);
 			
 			// set Labels
 			range1.setToolTipText("Select the Range for Dimension: " + DataHolder.data.getDimensionName(0));
@@ -223,30 +219,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 		this.setJMenuBar(bar);		
 		
-		
-		heatColourRange = new JPanel(){
-			/**
-			 * Serial ID for panel
-			 */
-			private static final long serialVersionUID = 8689446790433294288L;
-			
-			@Override
-			public void paint(Graphics g){
-				Color[] gradientColors = new Color[]{Color.blue, Color.yellow, Color.red};
-				Color[] colors = Gradient.createMultiGradient(gradientColors, 101);
-				
-				Graphics2D g2 = (Graphics2D)g;
-				
-				int bwidth = (int)(this.getWidth() / 101);
-				
-				for (int i = 0; i < colors.length; ++i){
-					g2.setColor(colors[i]);
-					g2.fillRect(bwidth * i, 0, bwidth, this.getHeight());
-				}
-			}
-		};
-		
-		// placement (Layout) ////////////
+		// placement (Layout)
 		GroupLayout layout = new GroupLayout(this.getContentPane());
 		this.getContentPane().setLayout(layout);
 		
@@ -402,8 +375,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		float min = DataHolder.data.getMinData(dim);
 		float max = DataHolder.data.getMaxData(dim);
 		
-		if (slider instanceof RangeSlider){
-			RangeSlider s = (RangeSlider)slider;
+		if (slider instanceof JRangeSlider || slider instanceof JRangeSliderGradient){
+			JRangeSlider s = (JRangeSlider)slider;
 			Hashtable<Object, Object> labels = new Hashtable<>();
 			float lowVal = min + (max - min) * (float)((s.getLowValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
 			float highVal = min + (max - min) * (float)( (s.getHighValue() - s.getMinimum()) / (float)(s.getMaximum() - (float)s.getMinimum()));
@@ -427,7 +400,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		}
 	}
 	
-	private void checkSlider(int num, RangeSlider slider){
+	private void checkSlider(int num, JRangeSlider slider){
 		if (DataHolder.fixedDimensions[0] == num){
 			step3D.setMinimum(slider.getLowValue());
 			step3D.setMaximum(slider.getHighValue());
