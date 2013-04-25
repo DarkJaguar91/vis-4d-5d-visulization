@@ -1,7 +1,13 @@
 package GUI;
 
+import heatMap.Gradient;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -126,10 +132,10 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	 */
 	public void plotGraph(){
 		// create a set
-		XYSeriesCollection set = new XYSeriesCollection();
+		final XYSeriesCollection set = new XYSeriesCollection();
 
 		// create a series for the set
-		XYSeries series = new XYSeries("2D Plot");
+		final XYSeries series = new XYSeries("2D Plot");
 		
 		// create array of indexes (allows for fixed dimension checks)
 		int[] arrayIndexes = new int[4];
@@ -186,7 +192,46 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		plot.setRangeGridlinePaint(gridOn ? Color.gray : Color.white); // makes it invis
 
 		// create renderer
-		final XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer)plot.getRenderer();
+		final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(){
+	        /**
+			 * serial ID
+			 */
+			private static final long serialVersionUID = 7198588657058620063L;
+
+			@Override
+	        public Paint getItemPaint(int row, int col) {
+	            Paint cpaint = getItemColor(row, col);
+	            if (cpaint == null) {
+	                cpaint = super.getItemPaint(row, col);
+	            }
+	            return cpaint;
+	        }
+
+	    public Color getItemColor(int row, int col) {
+	        double y = set.getYValue(row, col);
+	        
+	        float val = (float)y;
+	        float min = DataHolder.data.getMinData(4);
+	        float max = DataHolder.data.getMaxData(4);
+	        
+	        int colVal = (int)((319) * (float)((val- min) / (float)(max - min)));
+	        Color[] gradientColors = new Color[]{Color.blue, Color.yellow, Color.red};
+			Color[] customGradient = Gradient.createMultiGradient(gradientColors, 320);
+			
+	        return customGradient[colVal];
+	    }
+
+	    @Override
+	    protected void drawFirstPassShape(Graphics2D g2, int pass, int series,
+	        int item, Shape shape) {
+	        g2.setStroke(getItemStroke(series, item));
+	        Color c1 = getItemColor(series, item);
+	        Color c2 = getItemColor(series, item - 1);
+	        GradientPaint linePaint = new GradientPaint(0, 0, c1, 0, 300, c2);
+	        g2.setPaint(linePaint);
+	        g2.draw(shape);
+	    }
+	};
 		renderer.setSeriesLinesVisible(0, showLine);
 		renderer.setSeriesShapesVisible(0, true);
 		plot.setRenderer(renderer);
