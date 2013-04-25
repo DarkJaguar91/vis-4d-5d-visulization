@@ -2,6 +2,7 @@ package GUI;
 
 import heatMap.Gradient;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GradientPaint;
@@ -20,10 +21,13 @@ import javax.swing.JMenuItem;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -159,14 +163,15 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		float max = DataHolder.data.getMaxData(odd);
 		float min = DataHolder.data.getMinData(odd);
 		
-		float dataMax = DataHolder.data.getLength(odd);
+		float dataMax = DataHolder.data.getLength(odd) - 1;
 		
 		// add each point into the series
 		for (int i = (int)DataHolder.getMinFilter(odd); i <= (int)DataHolder.getMaxFilter(odd); ++i){
 			// get the data from the array at the point
+			System.out.println(i);
 			float temp = DataHolder.data.getData()[arrayIndexes[0] == -1 ? i : arrayIndexes[0]][arrayIndexes[1] == -1 ? i : arrayIndexes[1]][arrayIndexes[2] == -1 ? i : arrayIndexes[2]][arrayIndexes[3] == -1 ? i : arrayIndexes[3]];
 			if (temp >= DataHolder.getMinFilter(4) && temp <= DataHolder.getMaxFilter(4)) // if within specified temp range
-				series.add(min + (max - min) * (float)(((i+1)) / (float)(dataMax)), temp);
+				series.add(min + (max - min) * (float)(((i)) / (float)(dataMax)), temp);
 		}
 		
 		set.addSeries(series); // add the series to the set
@@ -234,6 +239,19 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	};
 		renderer.setSeriesLinesVisible(0, showLine);
 		renderer.setSeriesShapesVisible(0, true);
+	    renderer.setSeriesStroke(0, new BasicStroke(3F));
+	    renderer.setUseFillPaint(true);
+
+	     // SET TOOLTIP FOR RENDERER
+	    renderer.setBaseToolTipGenerator(new XYToolTipGenerator() {
+	      public String generateToolTip(XYDataset dataset, int series, int item) {
+	        StringBuffer sb = new StringBuffer();
+	        Number x = dataset.getX(series, item);
+	        Number y = dataset.getY(series, item);
+	        sb.append("(" + x + "," + y + ")");
+	        return sb.toString();
+	      }
+	    });
 		plot.setRenderer(renderer);
 
 		// draw the ticks
