@@ -1,6 +1,8 @@
 package Data;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import GUI.GraphScreen;
 import GUI.HM2DPlot;
@@ -34,13 +36,13 @@ public class DataHolder {
 		// set ui
 //		for (LookAndFeelInfo s : UIManager.getInstalledLookAndFeels())
 //			if (s.getName().toLowerCase().equals("nimbus"))
-//				try {
-//					UIManager.setLookAndFeel(s.getClassName());
-//				} catch (ClassNotFoundException | InstantiationException
-//						| IllegalAccessException
-//						| UnsupportedLookAndFeelException e) {
-//					e.printStackTrace();
-//				}
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (ClassNotFoundException | InstantiationException
+						| IllegalAccessException
+						| UnsupportedLookAndFeelException e) {
+					e.printStackTrace();
+				}
 		
 		fixedDimensions = new int[3];
 		fixedDimensions[0] = 0;
