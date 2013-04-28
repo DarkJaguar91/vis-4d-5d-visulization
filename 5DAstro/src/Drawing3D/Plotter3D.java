@@ -687,7 +687,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		for(float i = 0; i <= globalMaxH - globalMinH; i += majorTickIntervalH){
 			gl.glPushMatrix();
 
-			gl.glTranslated(globalMaxX,(i + globalMinH)*this.heightScale,globalMinY - axisOffset - majorTickLength*1.8);
+			gl.glTranslated(globalMaxX+axisOffset*3,(i + globalMinH)*this.heightScale,globalMinY - axisOffset - majorTickLength*1.8);
 			gl.glRotatef(angleX,0,-1,0);
 			gl.glRotatef(angleY,1,0,0);
 			gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
@@ -696,7 +696,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			gl.glPopMatrix();
 		}
 		gl.glPushMatrix();
-		gl.glTranslated(globalMaxX,
+		gl.glTranslated(globalMaxX+axisOffset*3,
 				(globalMaxH+globalMinH)*0.5*heightScale,
 				globalMinY - textOffsetFromAxis*1.3);
 		gl.glRotatef(angleX,0,-1,0);
