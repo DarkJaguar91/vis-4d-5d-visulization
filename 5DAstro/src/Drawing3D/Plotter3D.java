@@ -65,10 +65,11 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 	double majorTickIntervalX;
 	double majorTickIntervalH;
 	double majorTickIntervalY;
+	float[] axisColour = {1,1,1};
 	int minorTickLength = 2;
 	int majorTickLength = 6;
 	int textOffsetFromAxis = 25;
-	double textScale = 0.045;
+	double textScale = 0.035;
 	double percentOfTextScale = 1;
 	//control variables,ChangeListener
 	boolean isMouseRightDown = false;
@@ -85,7 +86,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 	double globalMaxC = 100;
 	double globalMinC = 0;
 	double axisOffset = 0;
-	//Pin Setup:
+	//Unproject setup:
 	double[] projectionMatrix = new double[16];
 	double[] viewMatrix = new double[16];
 	int[] viewport = new int[4];
@@ -132,7 +133,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		double minorTickIntervalY = this.majorTickIntervalY / (wantMinorTicksY+1);
 		axisOffset = ((globalMaxX - globalMinX)*0.1f + (globalMaxY - globalMinY)*0.1f)*0.5f;
 		//draw axis
-		gl.glColor3f(1,1,1);
+		gl.glColor3f(axisColour[0],axisColour[1],axisColour[2]);
 		gl.glBegin(GL.GL_LINES);
 
 		//X:
@@ -152,7 +153,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		//Height ruler:
 		for(float i = 0; i < globalMaxH - globalMinH; i+=minorTickIntervalH){
 			gl.glVertex3d(globalMaxX,globalMinH + i,globalMinY-axisOffset);
-			gl.glVertex3d(globalMaxX,globalMinH + i,globalMinY-axisOffset + minorTickLength);
+			gl.glVertex3d(globalMaxX,globalMinH + i,globalMinY-axisOffset - minorTickLength);
 		}
 		//Z ruler:
 		for(float i = 0; i < globalMaxY - globalMinY + axisOffset; i+=minorTickIntervalY){
@@ -168,7 +169,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		//Height ruler:
 		for(float i = 0; i < globalMaxH - globalMinH; i+=majorTickIntervalH){
 			gl.glVertex3d(globalMaxX,globalMinH + i,globalMinY-axisOffset);
-			gl.glVertex3d(globalMaxX,globalMinH + i,globalMinY-axisOffset + majorTickLength);
+			gl.glVertex3d(globalMaxX,globalMinH + i,globalMinY-axisOffset - majorTickLength);
 		}
 		//Z ruler:
 		for(float i = 0; i < globalMaxY - globalMinY + axisOffset; i+=majorTickIntervalY){
@@ -681,11 +682,12 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		DecimalFormat df = new DecimalFormat();
 		df.applyPattern("0");
 		gl.glScaled(1, 1/this.heightScale, 1);
+		gl.glColor3f(axisColour[0],axisColour[1],axisColour[2]);
 		//Height ruler:
 		for(float i = 0; i < globalMaxH - globalMinH; i += majorTickIntervalH){
 			gl.glPushMatrix();
 
-			gl.glTranslated(globalMaxX,(i + globalMinH)*this.heightScale,globalMinY - axisOffset + textOffsetFromAxis*0.3);
+			gl.glTranslated(globalMaxX,(i + globalMinH)*this.heightScale,globalMinY - axisOffset - majorTickLength*1.8);
 			gl.glRotatef(angleX,0,-1,0);
 			gl.glRotatef(angleY,1,0,0);
 			gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
@@ -696,19 +698,19 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glPushMatrix();
 		gl.glTranslated(globalMaxX,
 				(globalMaxH+globalMinH)*0.5*heightScale,
-				globalMinY  - textOffsetFromAxis - textOffsetFromAxis*0.9);
+				globalMinY - textOffsetFromAxis*1.3);
 		gl.glRotatef(angleX,0,-1,0);
 		gl.glRotatef(angleY,1,0,0);
 		gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
 		gl.glColor3f(1, 0, 1);
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, ""+label2);
-		gl.glColor3f(1, 1, 1);
+		gl.glColor3f(axisColour[0],axisColour[1],axisColour[2]);
 		gl.glPopMatrix();
 		//X ruler:
 		for(float i = 0; i < globalMaxX - globalMinX + axisOffset; i += majorTickIntervalX){
 			gl.glPushMatrix();
 
-			gl.glTranslated(globalMinX-axisOffset + i,0,globalMinY - axisOffset - textOffsetFromAxis*0.9);
+			gl.glTranslated(globalMinX-axisOffset + i,0,globalMinY - axisOffset - majorTickLength*1.8);
 			gl.glRotatef(angleX,0,-1,0);
 			gl.glRotatef(angleY,1,0,0);
 			gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
@@ -719,19 +721,19 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glPushMatrix();
 		gl.glTranslated((globalMinX+globalMaxX-axisOffset*2)*0.5,
 				0,
-				globalMinY - axisOffset*2.5 - textOffsetFromAxis*percentOfTextScale*0.9);
+				globalMinY - axisOffset*2.5 - textOffsetFromAxis*1.3);
 		gl.glRotatef(angleX,0,-1,0);
 		gl.glRotatef(angleY,1,0,0);
 		gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
 		gl.glColor3f(1, 0, 1);
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, ""+label1);
-		gl.glColor3f(1, 1, 1);
+		gl.glColor3f(axisColour[0],axisColour[1],axisColour[2]);
 		gl.glPopMatrix();
 		//Z ruler:
 		for(float i = 0; i < globalMaxY - globalMinY + axisOffset; i += majorTickIntervalY){
 			gl.glPushMatrix();
 
-			gl.glTranslated(globalMinY - axisOffset - textOffsetFromAxis*0.9,0,globalMinY-axisOffset + i);
+			gl.glTranslated(globalMinY - axisOffset - majorTickLength*1.8,0,globalMinY-axisOffset + i);
 			gl.glRotatef(angleX,0,-1,0);
 			gl.glRotatef(angleY,1,0,0);
 			gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
@@ -741,13 +743,15 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		}
 		
 		gl.glPushMatrix();
-		gl.glTranslated(globalMinY - axisOffset*2.5 - textOffsetFromAxis*percentOfTextScale*0.9,0,(globalMinY+globalMaxY-axisOffset*2)*0.5);
+		gl.glTranslated(globalMinY - axisOffset*2.5 - textOffsetFromAxis*1.3,
+				0,
+				(globalMinY+globalMaxY-axisOffset*2)*0.5);
 		gl.glRotatef(angleX,0,-1,0);
 		gl.glRotatef(angleY,1,0,0);
 		gl.glScaled(textScale*percentOfTextScale,textScale*percentOfTextScale,textScale*percentOfTextScale);
 		gl.glColor3f(1, 0, 1);
 		glut.glutStrokeString(GLUT.STROKE_ROMAN, ""+label3);
-		gl.glColor3f(1, 1, 1);
+		gl.glColor3f(axisColour[0],axisColour[1],axisColour[2]);
 		gl.glPopMatrix();
 		
 		//Draw text:
@@ -823,6 +827,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			createAxis(gl);
 			shouldRecompileAxis = false;
 		}
+		gl.glClearColor(1-axisColour[0], 1-axisColour[1], 1-axisColour[2], 1);
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
 		gl.glLoadIdentity();  // reset the model-view matrix
 		//Scale, Rotate and translate world:
@@ -841,9 +846,9 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 
 		//Draw points
 		gl.glCallList(pointsList);
-		//draw selected point in white:
+		//draw selected point in axis color:
 				if (DataHolder.getSelectedPoint() != null){
-					gl.glColor3f(1, 1, 1);
+					gl.glColor3f(axisColour[0], axisColour[1], axisColour[2]);
 					gl.glPointSize(5);
 					gl.glBegin(GL_POINTS);
 					switch(DataHolder.getFixedDimension(0)){
@@ -894,7 +899,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glVertex2f(getWidth(),0);
 		gl.glVertex2f(getWidth(),15f);
 		gl.glEnd();
-		gl.glColor3f(1, 1, 1);
+		gl.glColor3f(axisColour[0], axisColour[1], axisColour[2]);
 		if (DataHolder.getSelectedPoint() != null){
 			//Draw triangle at the heat of the selected point:
 			double xMid = (DataHolder.getSelectedPoint()[4]-DataHolder.data.getMinData(4))/(DataHolder.data.getMaxData(4)-DataHolder.data.getMinData(4))*getWidth();
@@ -920,14 +925,14 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 					-heat.length()*3/2;
 			float overlap = x <= 0 ? x : 
 				x+heat.length()*4 > getWidth() ? x+heat.length()*4 - getWidth() : 0;
-			gl.glColor3f(0, 0, 0);
+			gl.glColor3f(1-axisColour[0], 1-axisColour[1], 1-axisColour[2]);
 			gl.glBegin(GL2.GL_QUADS);
 			gl.glVertex2d(x, 35);
 			gl.glVertex2d(x, 25);
 			gl.glVertex2d(x+heat.length()*4, 25);
 			gl.glVertex2d(x+heat.length()*4, 35);
 			gl.glEnd();
-			gl.glColor3f(1, 1, 1);
+			gl.glColor3f(axisColour[0], axisColour[1], axisColour[2]);
 			gl.glRasterPos2i((int)Math.ceil(x - overlap), 
 					25);
 			glut.glutBitmapString(GLUT.BITMAP_TIMES_ROMAN_10, ""+heat);
@@ -1016,7 +1021,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 1)
+						if (dist < 0.3)
 							pointList.add(pt);
 					}
 			break;
@@ -1048,7 +1053,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 1)
+						if (dist < 0.3)
 							pointList.add(pt);
 					}
 			break;
@@ -1080,7 +1085,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 1)
+						if (dist < 0.3)
 							pointList.add(pt);
 					}
 			break;
@@ -1112,7 +1117,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						double cZ = dX*vY - dY*vX;
 						double dist = Math.sqrt(cX*cX + cY*cY + cZ*cZ)/vDist;
 				
-						if (dist < 1)
+						if (dist < 0.3)
 							pointList.add(pt);
 					}
 			break;
@@ -1283,5 +1288,17 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 	}
 	public void reload(){
 		shouldRecompileLists = true;
+	}
+	public void setDarkTheme(boolean dark){
+		if (dark){
+			axisColour[0] = 1;
+			axisColour[1] = 1;
+			axisColour[2] = 1;
+		} else {
+			axisColour[0] = 0;
+			axisColour[1] = 0;
+			axisColour[2] = 0;
+		}
+		shouldRecompileAxis = true;
 	}
 }

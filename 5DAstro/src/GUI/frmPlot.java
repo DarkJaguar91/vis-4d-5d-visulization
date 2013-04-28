@@ -35,6 +35,7 @@ public class frmPlot extends JFrame implements ActionListener,ChangeListener{
 	JMenuBar mbrMain = new JMenuBar();
 	JMenu mnuOptions = new JMenu("Options");
 	JMenu mnuAxis = new JMenu("Axis");
+	JMenu mnuStyle = new JMenu("Style");
 	JMenu mnuFontSize = new JMenu("Tick Font Size");
 	JMenu mnuTicksOnXAxis = new JMenu("X axis");
 	JMenu mnuTicksOnYAxis = new JMenu("Y axis");
@@ -44,9 +45,9 @@ public class frmPlot extends JFrame implements ActionListener,ChangeListener{
 	JMenu mnuMinorTicksOnZAxis = new JMenu("Z axis");
 	JMenu mnuMinor = new JMenu("Minor Ticks");
 	JMenu mnuMajor = new JMenu("Major Ticks");
-	JRadioButton mitRenderModeFill = new JRadioButton("Fill",true);
-	JRadioButton mitRenderModeWire = new JRadioButton("Wire Frame");
-	JRadioButton mitRenderModeBoth = new JRadioButton("Both");
+	JRadioButton mitRenderDark = new JRadioButton("Dark",true);
+	JRadioButton mitRenderLight = new JRadioButton("Light");
+	
 	JMenuItem mitSnapshot = new JMenuItem("Take snapshot");
 	JSlider jslAxisFontSize = new JSlider();
 	JSpinner jspNumXTicks = new JSpinner();
@@ -60,11 +61,13 @@ public class frmPlot extends JFrame implements ActionListener,ChangeListener{
 	 */
 	private void setupMenus(){
 		mbrMain.add(mnuOptions);
-		mitRenderModeFill.addActionListener(this);
-		mitRenderModeWire.addActionListener(this);
-		mitRenderModeBoth.addActionListener(this);
+		mitRenderDark.addActionListener(this);
+		mitRenderLight.addActionListener(this);
 		
 		mnuOptions.add(mnuAxis);
+		mnuOptions.add(mnuStyle);
+		mnuStyle.add(mitRenderDark);
+		mnuStyle.add(mitRenderLight);
 		mnuOptions.add(mitSnapshot);
 		mitSnapshot.addActionListener(this);
 		mnuAxis.add(mnuFontSize);
@@ -262,7 +265,17 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getSource() == mitSnapshot)
+		if (arg0.getSource() == mitRenderDark)
+		{
+			frmPlot.setDarkTheme(true);
+			mitRenderLight.setSelected(false);
+		}
+		else if (arg0.getSource() == mitRenderLight)
+		{
+			frmPlot.setDarkTheme(false);
+			mitRenderDark.setSelected(false);
+		}
+		else if (arg0.getSource() == mitSnapshot)
 		{
 			BufferedImage image = new BufferedImage(this.frmPlot.getWidth(), this.frmPlot.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D graphics2D = image.createGraphics();
