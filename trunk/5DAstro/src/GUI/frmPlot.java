@@ -268,12 +268,14 @@ this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		if (arg0.getSource() == mitRenderDark)
 		{
 			frmPlot.setDarkTheme(true);
+			mitRenderDark.setSelected(true);
 			mitRenderLight.setSelected(false);
 		}
 		else if (arg0.getSource() == mitRenderLight)
 		{
 			frmPlot.setDarkTheme(false);
 			mitRenderDark.setSelected(false);
+			mitRenderLight.setSelected(true);
 		}
 		else if (arg0.getSource() == mitSnapshot)
 		{
