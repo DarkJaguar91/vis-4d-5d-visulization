@@ -44,6 +44,9 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	JMenuItem loadFile, show3D, showGraph, Help, showHMap, hm2dGraph;
 	JPanel heatColourRange;
 	
+	/**
+	 * Constructor
+	 */
 	public SliderMenu() {
 		super("Slider Menu");
 
@@ -299,6 +302,9 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 //		this.setSize(this.getWidth() * 2, this.getHeight());
 	}
 
+	/**
+	 * Tells the buttons to show the correct data (hide or show)
+	 */
 	public void refreshButtons(){
 		// 3d
 		show3D.setText(DataHolder.plotter.isVisible() ? "Hide 3D Plotter" : "Show 3D Plotter");
@@ -350,6 +356,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		DataHolder.updatePlotter();
 	}
 	
+	/**
+	 * Sets the text for the specific slider
+	 * @param slider The slider to set the text
+	 */
 	private void setText(JSlider slider){		
 		int dim = 0;
 		if (slider.equals(range1))
@@ -402,6 +412,11 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		}
 	}
 	
+	/**
+	 * Checks the slider to tell the steps what their minimum or maximum value should be
+	 * @param num The number of the dimension to use (0 - 3)
+	 * @param slider the slider that determines the range it should have
+	 */
 	private void checkSlider(int num, JRangeSlider slider){
 		if (DataHolder.fixedDimensions[0] == num){
 			step3D.setMinimum(slider.getLowValue());
@@ -430,6 +445,9 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		}
 	}
 
+	/**
+	 * Checks the colour for the dimension chooser and the step for the chooser
+	 */
 	private void checkColor(){
 		int dim;
 		// 3D
