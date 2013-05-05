@@ -28,31 +28,48 @@ class JSliderUI extends BasicSliderUI {
 		super.paint(g, c);
 	}	
 
-//	@Override
-//	public void paintTrack(Graphics g) {
-//		Rectangle trackBounds = (Rectangle)trackRect.clone();
-//		
-//		JRangeSlider s = (JRangeSlider)slider;
-//		
-//		int numTicks = s.getMaximum() - s.getMinimum();
-//		
-//		Color[] gradientColors = new Color[]{Color.blue, Color.yellow, Color.red};
-//		Color[] customGradient = Gradient.createMultiGradient(gradientColors, numTicks);
-//		
-//		int cy = (trackBounds.height / 2) - 2;
-//        int cw = trackBounds.width;
-//        
-//        float uw = cw / (float)numTicks;
-//        
-//        g.translate(trackBounds.x, trackBounds.y + cy);
-//		
-//        for (int i = 0; i < numTicks; ++i){
-//        	g.setColor(customGradient[i]);
-//        	g.fillRect((int)(i * uw), 0, (int)Math.ceil(uw), 3);
-//        }
-//        
-//        g.translate(-trackBounds.x, -(trackBounds.y + cy));
-//	}
+	@Override
+	public void paintTrack(Graphics g)  {
+
+        Rectangle trackBounds = trackRect;
+
+        JRangeSlider s = (JRangeSlider)slider;
+        
+        if ( slider.getOrientation() == JSlider.HORIZONTAL ) {
+            int cy = (trackBounds.height / 2) - 2;
+            int cw = trackBounds.width;
+
+            g.translate(trackBounds.x, trackBounds.y + cy);
+
+            g.setColor(getShadowColor());
+            g.drawLine(0, 0, cw - 1, 0);
+            g.drawLine(0, 1, 0, 2);
+            g.setColor(getHighlightColor());
+            g.drawLine(0, 3, cw, 3);
+            g.drawLine(cw, 0, cw, 3);
+            g.setColor(s.colour);
+            g.drawLine(1, 1, cw-2, 1);
+
+            g.translate(-trackBounds.x, -(trackBounds.y + cy));
+        }
+        else {
+            int cx = (trackBounds.width / 2) - 2;
+            int ch = trackBounds.height;
+
+            g.translate(trackBounds.x + cx, trackBounds.y);
+
+            g.setColor(getShadowColor());
+            g.drawLine(0, 0, 0, ch - 1);
+            g.drawLine(1, 0, 2, 0);
+            g.setColor(getHighlightColor());
+            g.drawLine(3, 0, 3, ch);
+            g.drawLine(0, ch, 3, ch);
+            g.setColor(s.colour);
+            g.drawLine(1, 1, 1, ch-2);
+
+            g.translate(-(trackBounds.x + cx), -trackBounds.y);
+        }
+    }
 
 	@Override
 	public void paintThumb(Graphics g) {

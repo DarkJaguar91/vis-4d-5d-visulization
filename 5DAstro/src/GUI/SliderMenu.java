@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -20,6 +21,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import Data.DataHolder;
+import Slider.JColorSlider;
 import Slider.JRangeSlider;
 import Slider.JRangeSliderGradient;
 
@@ -36,7 +38,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	private static final long serialVersionUID = 5316995727166463675L;
 
 	// globals
-	public JSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
+	public JColorSlider chooser3D, chooser2D, chooserGraph, step3D, step2D, stepGraph;
 	public JRangeSlider range1, range2, range3, range4;
 	public JRangeSliderGradient rangeHeat;
 	JMenuItem loadFile, show3D, showGraph, Help, showHMap, hm2dGraph;
@@ -64,12 +66,12 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// Slider details
 		{
 			// initialise
-			chooser3D = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[0]);
-			chooser2D = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[1]);
-			chooserGraph = new JSlider(0, 3, 3 - DataHolder.fixedDimensions[2]);
-			step3D = new JSlider(0, DataHolder.data.getLength(0)-1, 0);
-			step2D = new JSlider(0, DataHolder.data.getLength(1)-1, 0);
-			stepGraph = new JSlider(0, DataHolder.data.getLength(2)-1, 0);
+			chooser3D = new JColorSlider(0, 3, 3 - DataHolder.fixedDimensions[0], Color.red);
+			chooser2D = new JColorSlider(0, 3, 3 - DataHolder.fixedDimensions[1], Color.green);
+			chooserGraph = new JColorSlider(0, 3, 3 - DataHolder.fixedDimensions[2], Color.blue);
+			step3D = new JColorSlider(0, DataHolder.data.getLength(0)-1, 0, Color.red);
+			step2D = new JColorSlider(0, DataHolder.data.getLength(1)-1, 0, Color.green);
+			stepGraph = new JColorSlider(0, DataHolder.data.getLength(2)-1, 0, Color.blue);
 			
 			// add change listener
 			chooser2D.addMouseListener(this);
@@ -125,10 +127,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// Range selector setup
 		{
 			// initialize
-			range1 = new JRangeSlider(0, DataHolder.data.getLength(0)-1, 0, DataHolder.data.getLength(0)-1);
-			range2 = new JRangeSlider(0, DataHolder.data.getLength(1)-1, 0, DataHolder.data.getLength(1)-1);
-			range3 = new JRangeSlider(0, DataHolder.data.getLength(2)-1, 0, DataHolder.data.getLength(2)-1);
-			range4 = new JRangeSlider(0, DataHolder.data.getLength(3)-1, 0, DataHolder.data.getLength(3)-1);
+			range1 = new JRangeSlider(0, DataHolder.data.getLength(0)-1, 0, DataHolder.data.getLength(0)-1, Color.red);
+			range2 = new JRangeSlider(0, DataHolder.data.getLength(1)-1, 0, DataHolder.data.getLength(1)-1, Color.green);
+			range3 = new JRangeSlider(0, DataHolder.data.getLength(2)-1, 0, DataHolder.data.getLength(2)-1, Color.blue);
+			range4 = new JRangeSlider(0, DataHolder.data.getLength(3)-1, 0, DataHolder.data.getLength(3)-1, Color.magenta);
 			rangeHeat = new JRangeSliderGradient(0, 100, 0, 100);
 			
 			// set Labels
@@ -388,10 +390,10 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		}
 		else{
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			
+
 			float newmin = min + (max - min) * (float)( (slider.getMinimum() - 0) / (float)(DataHolder.data.getLength(dim)-1));
 			float newmax = min + (max - min) * (float)( (slider.getMaximum() - 0) / (float)(DataHolder.data.getLength(dim)-1));
-			
+
 			float highVal = newmin + (newmax - newmin) * (float)( (slider.getValue() - slider.getMinimum()) / (float)(slider.getMaximum() - (float)slider.getMinimum()));
 			labels.put(new Integer(slider.getValue()), new JLabel("" + highVal));
 			labels.put(new Integer(slider.getMinimum()), new JLabel("" + newmin));
@@ -428,6 +430,63 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		}
 	}
 
+	private void checkColor(){
+		int dim;
+		// 3D
+		dim = 3 - chooser3D.getValue();
+		switch (dim){
+		case 0 :
+			chooser3D.colour = range1.colour;
+			break;
+		case 1 :
+			chooser3D.colour = range2.colour;
+			break;
+		case 2 :
+			chooser3D.colour = range3.colour;
+			break;
+		case 3 :
+			chooser3D.colour = range4.colour;
+			break;
+		}
+		step3D.colour = chooser3D.colour;
+
+		// 2D
+		dim = 3 - chooser2D.getValue();
+		switch (dim){
+		case 0 :
+			chooser2D.colour = range1.colour;
+			break;
+		case 1 :
+			chooser2D.colour = range2.colour;
+			break;
+		case 2 :
+			chooser2D.colour = range3.colour;
+			break;
+		case 3 :
+			chooser2D.colour = range4.colour;
+			break;
+		}
+		step2D.colour = chooser2D.colour;
+
+		// Graph
+		dim = 3 - chooserGraph.getValue();
+		switch (dim){
+		case 0 :
+			chooserGraph.colour = range1.colour;
+			break;
+		case 1 :
+			chooserGraph.colour = range2.colour;
+			break;
+		case 2 :
+			chooserGraph.colour = range3.colour;
+			break;
+		case 3 :
+			chooserGraph.colour = range4.colour;
+			break;
+		}
+		stepGraph.colour = chooserGraph.colour;
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 	}
@@ -494,6 +553,8 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		checkSlider(3, range4);
 		
 		DataHolder.updatePlotter();
+		
+		checkColor();
 	}
 	
 }
