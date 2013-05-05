@@ -1,5 +1,7 @@
 package Slider;
 
+import java.awt.Color;
+
 
 /**
  *
@@ -23,7 +25,7 @@ public class JRangeSliderGradient extends JRangeSlider {
     }
 
     public JRangeSliderGradient(int min, int max, int low, int high) {
-        super(min, max, low, high);
+        super(min, max, low, high, Color.black);
     }
 	
 	@Override

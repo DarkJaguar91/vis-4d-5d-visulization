@@ -1,4 +1,6 @@
 package Slider;
+import java.awt.Color;
+
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JSlider;
 
@@ -16,7 +18,8 @@ public class JRangeSlider extends JSlider {
     public static final String PROPERTY_LOW_VALUE = "lowValue";
     public static final String PROPERTY_HIGH_VALUE = "highValue";
 	
-
+    public Color colour;
+    
     public JRangeSlider() {
     }
 
@@ -28,12 +31,13 @@ public class JRangeSlider extends JSlider {
         super(min, max);
     }
 
-    public JRangeSlider(int min, int max, int low, int high) {
+    public JRangeSlider(int min, int max, int low, int high, Color c) {
         super(new DefaultBoundedRangeModel(low, high - low,
                 min, max));
         getModel().removeChangeListener(changeListener);
         getModel().removeChangeListener(changeListener); // work around a JSlider bug which registers two change listeners with this constructor.
         getModel().addChangeListener(changeListener);
+        colour = c;
     }
     
     @Override
