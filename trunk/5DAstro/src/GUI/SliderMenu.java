@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.GroupLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -43,6 +44,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	public JRangeSliderGradient rangeHeat;
 	JMenuItem loadFile, show3D, showGraph, Help, showHMap, hm2dGraph;
 	JPanel heatColourRange;
+	JFileChooser chooser;
 	
 	/**
 	 * Constructor
@@ -65,6 +67,9 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		JLabel step3DL = new JLabel("Step for 3D Display");
 		JLabel step2DL = new JLabel("Step for 2D Display");
 		JLabel stepGraphL = new JLabel("Step for Graph");
+		
+		// init file chooser
+		chooser = new JFileChooser();
 
 		// Slider details
 		{
@@ -184,20 +189,16 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		Help = new JMenuItem("Help");
 		bar.add(loadFile);
 		bar.add(show3D);
-		bar.add(showGraph);
 		bar.add(showHMap);
+		bar.add(showGraph);
 		bar.add(Help);
 		
 		loadFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try{
-					DataHolder.data.loadFile("out.arr");
-					DataHolder.plotter.reload();
-					DataHolder.updatePlotter();
-				} catch (Exception E){
-					JOptionPane.showMessageDialog(null,"Could not load file:\n"+E.getStackTrace());
-					E.printStackTrace();
+				int result = chooser.showOpenDialog(null);
+				if (result == JFileChooser.APPROVE_OPTION){
+					DataHolder.data.loadFile(chooser.getSelectedFile().getAbsolutePath());
 				}
 			}
 		});
@@ -310,6 +311,36 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	}
 
 	/**
+	 * refreshes the slider to the new data
+	 */
+	public void refreshSlidersWithNewData(){
+		range1.setMaximum(DataHolder.data.getLength(0) - 1);
+		range2.setMaximum(DataHolder.data.getLength(1) - 1);
+		range3.setMaximum(DataHolder.data.getLength(2) - 1);
+		range4.setMaximum(DataHolder.data.getLength(3) - 1);
+		
+		range1.setHighValue(range1.getMaximum());
+		range2.setHighValue(range2.getMaximum());
+		range3.setHighValue(range3.getMaximum());
+		range4.setHighValue(range4.getMaximum());
+		range1.setLowValue(0);
+		range2.setLowValue(0);
+		range3.setLowValue(0);
+		range4.setLowValue(0);
+		
+		setText(range1);
+		setText(range2);
+		setText(range3);
+		setText(range4);
+		checkSlider(0, range1);
+		checkSlider(1, range2);
+		checkSlider(2, range3);
+		checkSlider(3, range4);
+		
+		setText(rangeHeat);		
+	}
+	
+	/**
 	 * Tells the buttons to show the correct data (hide or show)
 	 */
 	public void refreshButtons(){
@@ -318,7 +349,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// graph		
 		showGraph.setText(DataHolder.plotterGraph.isVisible() ? "Hide Graph Plotter" : "Show Graph Plotter");
 		// heatmap
-		showHMap.setText(DataHolder.hm2dGraph.isVisible() ? "Hide Heat Map" : "Show Heat Map");
+		//showHMap.setText(DataHolder.hm2dGraph.isVisible() ? "Hide Heat Map" : "Show Heat Map");
 	}
 	
 	@Override
