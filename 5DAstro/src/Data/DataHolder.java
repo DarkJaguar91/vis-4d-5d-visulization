@@ -8,6 +8,7 @@ import GUI.GraphScreen;
 import GUI.HM2DPlot;
 import GUI.SliderMenu;
 import GUI.frmPlot;
+import GUI.loadMenu;
 
 /**
  * 
@@ -25,6 +26,7 @@ public class DataHolder {
 	public static frmPlot plotter; // the 3d jframe
 	public static GraphScreen plotterGraph; // the graph Jframe
 	public static HM2DPlot hm2dGraph; // the heat-map Jframe
+	public static loadMenu loadmenu;
 	
 	/**
 	 * Constructor
@@ -50,6 +52,9 @@ public class DataHolder {
 		fixedDimensions[2] = 2;
 		
 		data = new DataArray(20, 20, 20, 20, new String [] {"first", "second", "third", "forth"});
+
+		loadmenu = new loadMenu();
+		
 		SwingUtilities.invokeLater(
 				new Runnable(){
 					@Override
@@ -58,11 +63,12 @@ public class DataHolder {
 						plotter = new frmPlot();
 						plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 						
-						hm2dGraph = new HM2DPlot();
-						hm2dGraph.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
+						//hm2dGraph = new HM2DPlot();
+						//hm2dGraph.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 						
 						plotterGraph = new GraphScreen();
 						plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
+						loadmenu.setVisible(false);
 					}
 				}
 		);
@@ -74,7 +80,25 @@ public class DataHolder {
 	public static void updatePlotter(){
 		plotter.reload();
 		plotterGraph.plotGraph();
-		hm2dGraph.updateHMap();
+		//hm2dGraph.updateHMap();
+	}
+	
+	public static void startLoading(){
+		loadmenu.setVisible(true);
+		loadmenu.setLocationRelativeTo(null);
+		loadmenu.repaint();
+		sliderMenu.setVisible(false);
+		plotter.setVisible(false);
+		plotterGraph.setVisible(false);
+	}
+	
+	public static void stopLoading(){
+		loadmenu.setVisible(false);
+		sliderMenu.setVisible(true);
+		plotter.setVisible(true);
+		plotterGraph.setVisible(true);
+		updatePlotter();
+		sliderMenu.refreshSlidersWithNewData();
 	}
 	
 	/**
