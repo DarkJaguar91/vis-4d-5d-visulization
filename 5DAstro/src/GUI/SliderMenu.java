@@ -191,7 +191,14 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		loadFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Add call to loadFile (not done yet)
+				try{
+					DataHolder.data.loadFile("out.arr");
+					DataHolder.plotter.reload();
+					DataHolder.updatePlotter();
+				} catch (Exception E){
+					JOptionPane.showMessageDialog(null,"Could not load file:\n"+E.getStackTrace());
+					E.printStackTrace();
+				}
 			}
 		});
 		show3D.addActionListener(new ActionListener() {
