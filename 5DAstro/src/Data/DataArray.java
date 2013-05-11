@@ -80,8 +80,8 @@ public class DataArray {
 					data.DimensionNames[i] = split[0];
 					dimSize[i] = Integer.parseInt(split[1]);
 					// System.out.println(dimSize[i]);
-					data.minData[i] = 0/* Float.parseFloat(split[2]) */;
-					data.maxData[i] = 100/* Float.parseFloat(split[3]) */;
+					data.minData[i] = Float.parseFloat(split[2]);
+					data.maxData[i] = Float.parseFloat(split[3]);
 				}
 				data.data = new float[dimSize[0]][dimSize[1]][dimSize[2]][dimSize[3]];
 				data.minData[4] = s.nextFloat();
