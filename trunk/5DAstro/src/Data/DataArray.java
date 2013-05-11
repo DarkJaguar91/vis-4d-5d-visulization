@@ -1,6 +1,9 @@
 package Data;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * 
@@ -43,7 +46,34 @@ public class DataArray {
 					}
 		calculateData();
 	}
-
+	public void loadFile(String filename) throws FileNotFoundException{
+		Scanner s = new Scanner(new FileInputStream(filename));
+		minData = new float[5];
+		maxData = new float[5];
+		DimensionNames = new String[4];
+		int[] dimSize = new int[4];
+		for (int i = 0; i < 4; ++i){
+			String line = s.nextLine();
+			String[] split = line.split(",");
+			DimensionNames[i] = split[0];
+			dimSize[i] = Integer.parseInt(split[1]);
+			System.out.println(dimSize[i]);
+			minData[i] = 0/*Float.parseFloat(split[2])*/;
+			maxData[i] = 100/*Float.parseFloat(split[3])*/;
+		}
+		data = new float[dimSize[0]][dimSize[1]][dimSize[2]][dimSize[3]];
+		minData[4] = s.nextFloat();
+		maxData[4] = s.nextFloat();
+		for (int i = 0; i < dimSize[0]; ++i){
+			System.out.println(i/(float)dimSize[0]);
+			for (int j = 0; j < dimSize[1]; ++j)
+				for (int k = 0; k < dimSize[2]; ++k)
+					for (int l = 0; l < dimSize[3]; ++l){
+						data[i][j][k][l] = s.nextFloat();
+					}
+		}
+		s.close();
+	}
 	/**
 	 * Sets the data to the given array
 	 * 
