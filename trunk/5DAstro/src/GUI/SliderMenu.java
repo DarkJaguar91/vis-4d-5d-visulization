@@ -314,11 +314,13 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 	 * refreshes the slider to the new data
 	 */
 	public void refreshSlidersWithNewData(){
+		// set range choosers maximums incase its changed
 		range1.setMaximum(DataHolder.data.getLength(0) - 1);
 		range2.setMaximum(DataHolder.data.getLength(1) - 1);
 		range3.setMaximum(DataHolder.data.getLength(2) - 1);
 		range4.setMaximum(DataHolder.data.getLength(3) - 1);
 		
+		// set the max and min values for range sliders
 		range1.setHighValue(range1.getMaximum());
 		range2.setHighValue(range2.getMaximum());
 		range3.setHighValue(range3.getMaximum());
@@ -328,6 +330,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		range3.setLowValue(0);
 		range4.setLowValue(0);
 		
+		// set and check the sliders texts and the step sliders
 		setText(range1);
 		setText(range2);
 		setText(range3);
@@ -337,7 +340,16 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		checkSlider(2, range3);
 		checkSlider(3, range4);
 		
+		// check the ehat sliders text
 		setText(rangeHeat);		
+		
+		// change axis names
+		Hashtable<Object, Object> labels = new Hashtable<>();
+		labels.put(new Integer(3), new JLabel(DataHolder.data.getDimensionName(0)));
+		labels.put(new Integer(2), new JLabel(DataHolder.data.getDimensionName(1)));
+		labels.put(new Integer(1), new JLabel(DataHolder.data.getDimensionName(2)));
+		labels.put(new Integer(0), new JLabel(DataHolder.data.getDimensionName(3)));
+		chooserGraph.setLabelTable(labels);
 	}
 	
 	/**
