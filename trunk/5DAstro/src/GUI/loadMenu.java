@@ -2,17 +2,17 @@ package GUI;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-public class loadMenu extends JFrame{
+public class loadMenu extends JDialog{
 	/**
 	 * generated serial ID
 	 */
 	private static final long serialVersionUID = 4484316667280328406L;
 
 	public loadMenu(){
-		super("Loading");
+		super();
 		setVisible(true);
 		JLabel l = new JLabel("Loading...");
 		l.setAlignmentX(JLabel.CENTER_ALIGNMENT);
@@ -26,5 +26,8 @@ public class loadMenu extends JFrame{
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
+		
+//		setUndecorated(true);
+//		getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 	}
 }
