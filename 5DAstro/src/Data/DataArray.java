@@ -86,6 +86,7 @@ public class DataArray {
 				data.data = new float[dimSize[0]][dimSize[1]][dimSize[2]][dimSize[3]];
 				data.minData[4] = s.nextFloat();
 				data.maxData[4] = s.nextFloat();
+				s.nextFloat();
 				for (int i = 0; i < dimSize[0]; ++i) {
 					// System.out.println(i/(float)dimSize[0]);
 					for (int j = 0; j < dimSize[1]; ++j)
