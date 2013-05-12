@@ -185,6 +185,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			gl.glVertex3d(globalMinX*scaleX-axisOffset - majorTickLength+offSetX,0,globalMinY*scaleY-axisOffset + i+offSetY);
 		}
 		gl.glEnd();
+		gl.glLineWidth(5);
 		gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_LINE);
 		double stepX = 0, stepY = 0, stepH = 0;
 		//Draws cutting plane and cutting line indicators onto the axis (depending on the fixed dimensions)
@@ -434,8 +435,8 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 				gl.glBegin(GL.GL_LINES);
 				switch(DataHolder.getFixedDimension(2)){
 				case 1:
-					gl.glVertex3d(offSetX+globalMaxX*scaleX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset-minorTickLength+offSetY);
-					gl.glVertex3d(offSetX+globalMaxX*scaleX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset+minorTickLength+offSetY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset-minorTickLength+offSetH);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset+minorTickLength+offSetH);
 					break;
 				case 2:
 					gl.glVertex3d(-axisOffset-minorTickLength,0,DataHolder.getFixedDimensionStep(2)*stepY);
@@ -496,6 +497,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		}
 		gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_FILL);
 		gl.glEnd();
+		gl.glLineWidth(1);
 		gl.glEndList();
 	}
 	/**
@@ -861,7 +863,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glGetDoublev(GLMatrixFunc.GL_PROJECTION_MATRIX, projectionMatrix, 0);
 		gl.glGetDoublev(GLMatrixFunc.GL_MODELVIEW_MATRIX, viewMatrix, 0);
 		gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
-
+		
 		//Draw points
 		gl.glCallList(pointsList);
 		//draw selected point in axis color:
@@ -897,6 +899,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		//Draw the rotating text on the rulers:
 		gl.glCallList(axisList);
 		drawRullerText(gl);
+		
 		
 		//Draw color range:
 		gl.glMatrixMode(GL_PROJECTION); //setup ortho in the projection matrix
@@ -1001,7 +1004,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		float realy = viewport[3] - (int) arg0.getY() - 1;
 		glu.gluUnProject(arg0.getX(),realy, 0.1,viewMatrix,0,projectionMatrix,0,viewport,0,worldspaceCoordNear,0);
 		glu.gluUnProject(arg0.getX(),realy, 1,viewMatrix,0,projectionMatrix,0,viewport,0,worldspaceCoordFar,0);			
-
+		
 		double vX = - worldspaceCoordNear[0] + worldspaceCoordFar[0];
 		double vY = - worldspaceCoordNear[1] + worldspaceCoordFar[1];
 		double vZ = - worldspaceCoordNear[2] + worldspaceCoordFar[2];
@@ -1026,9 +1029,9 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 						
 						Float[] pt = {
 								new Float(DataHolder.data.getMinData(0) + DataHolder.getFixedDimensionStep(0)*stepD),
-								new Float(DataHolder.data.getMinData(1) + i*stepX),
-								new Float(DataHolder.data.getMinData(2) + j*stepY),
-								new Float(DataHolder.data.getMinData(3) + k*stepH),
+								new Float(i*stepX),
+								new Float(j*stepY),
+								new Float(k*stepH),
 								new Float(DataHolder.data.getData()[DataHolder.getFixedDimensionStep(0)][i][j][k])};
 						//distance point to line in 3D:
 						double dX = worldspaceCoordNear[0] - pt[1];
@@ -1057,10 +1060,10 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 								DataHolder.data.getData()[i][DataHolder.getFixedDimensionStep(0)][j][k] > DataHolder.getMaxFilter(4))
 							continue;
 						
-						Float[] pt = {new Float(DataHolder.data.getMinData(0) + i*stepX),
+						Float[] pt = {new Float(i*stepX),
 								new Float(DataHolder.data.getMinData(1) + DataHolder.getFixedDimensionStep(1)*stepD),
-								new Float(DataHolder.data.getMinData(2) + j*stepY),
-								new Float(DataHolder.data.getMinData(3) + k*stepH),
+								new Float(j*stepY),
+								new Float(k*stepH),
 								new Float(DataHolder.data.getData()[i][DataHolder.getFixedDimensionStep(0)][j][k])};
 						//distance point to line in 3D:
 						double dX = worldspaceCoordNear[0] - pt[0];
@@ -1077,7 +1080,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			break;
 		case 2:
 			stepD = (DataHolder.data.getMaxData(2) - DataHolder.data.getMinData(2))/DataHolder.data.getLength(2);
-			stepX = (globalMaxX - globalMinX)*scaleX/(DataHolder.data.getLength(0)-1);
+			stepX = (globalMaxX - globalMinX)*scaleX/(DataHolder.data.getLength(0)-1);		
 			stepY = (globalMaxY - globalMinY)*scaleY/(DataHolder.data.getLength(1)-1);
 			stepH = (globalMaxH - globalMinH)*scaleZ/(DataHolder.data.getLength(3)-1);
 			
@@ -1089,10 +1092,10 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 								DataHolder.data.getData()[i][j][DataHolder.getFixedDimensionStep(0)][k] > DataHolder.getMaxFilter(4))
 							continue;
 						
-						Float[] pt = {new Float(DataHolder.data.getMinData(0) + i*stepX),
-								new Float(DataHolder.data.getMinData(1) + j*stepY),
+						Float[] pt = {new Float(i*stepX),
+								new Float(j*stepY),
 								new Float(DataHolder.data.getMinData(2) + DataHolder.getFixedDimensionStep(2)*stepD),
-								new Float(DataHolder.data.getMinData(3) + k*stepH),
+								new Float(k*stepH),
 								new Float(DataHolder.data.getData()[i][j][DataHolder.getFixedDimensionStep(0)][k])};
 						//distance point to line in 3D:
 						double dX = worldspaceCoordNear[0] - pt[0];
@@ -1121,9 +1124,9 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 								DataHolder.data.getData()[i][j][k][DataHolder.getFixedDimensionStep(0)] > DataHolder.getMaxFilter(4))
 							continue;
 						
-						Float[] pt = {new Float(DataHolder.data.getMinData(0) + i*stepX),
-								new Float(DataHolder.data.getMinData(1) + j*stepY),
-								new Float(DataHolder.data.getMinData(2) + k*stepH),
+						Float[] pt = {new Float(i*stepX),
+								new Float(j*stepY),
+								new Float(k*stepH),
 								new Float(DataHolder.data.getMinData(3) + DataHolder.getFixedDimensionStep(3)*stepD),
 								new Float(DataHolder.data.getData()[i][j][k][DataHolder.getFixedDimensionStep(0)])};
 						//distance point to line in 3D:
@@ -1222,19 +1225,6 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 			}
 		}
 		DataHolder.setSelectedPoint(ptNearest);
-		/*if (ptNearest != null)
-			((frmPlot)this.getParent().getParent().getParent().getParent()).setTitle(
-					String.format("3D Viewer --- Selected [%.3f%n,%.3f%n,%.3f%n,%.3f%n,%.3f%n]", 
-					ptNearest[0],ptNearest[1],ptNearest[2],ptNearest[3],ptNearest[4]));*/
-		/*double vLength = Math.sqrt(vX*vX + vY*vY + vZ*vZ);		
-		vX = vX / vLength;
-		vY = vY / vLength;
-		vZ = vZ / vLength;
-		double t = (-worldspaceCoordNear[1])/(vY+0.000000000001);
-		
-		XI = (worldspaceCoordNear[0] + t*vX);
-		YI = 0; //XZ-Plane
-		ZI = (worldspaceCoordNear[2] + t*vZ);*/
 	}
 	@Override
 	public void mouseClicked(MouseEvent arg0) {}
