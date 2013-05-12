@@ -118,10 +118,18 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			
 			// add labels
 			Hashtable<Object, Object> labels = new Hashtable<>();
-			labels.put(new Integer(3), new JLabel(DataHolder.data.getDimensionName(0)));
-			labels.put(new Integer(2), new JLabel(DataHolder.data.getDimensionName(1)));
-			labels.put(new Integer(1), new JLabel(DataHolder.data.getDimensionName(2)));
-			labels.put(new Integer(0), new JLabel(DataHolder.data.getDimensionName(3)));
+			JLabel temp = new JLabel(DataHolder.data.getDimensionName(0));
+			temp.setForeground(Color.RED);
+			labels.put(new Integer(3), temp);
+			temp = new JLabel(DataHolder.data.getDimensionName(1));
+			temp.setForeground(Color.GREEN);
+			labels.put(new Integer(2), temp);
+			temp = new JLabel(DataHolder.data.getDimensionName(2));
+			temp.setForeground(Color.BLUE);
+			labels.put(new Integer(1), temp);
+			temp = new JLabel(DataHolder.data.getDimensionName(3));
+			temp.setForeground(Color.MAGENTA);
+			labels.put(new Integer(0), temp);
 			chooserGraph.setLabelTable(labels);
 			chooserGraph.setPaintLabels(true);
 			step3D.setPaintLabels(true);
@@ -345,10 +353,18 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		
 		// change axis names
 		Hashtable<Object, Object> labels = new Hashtable<>();
-		labels.put(new Integer(3), new JLabel(DataHolder.data.getDimensionName(0)));
-		labels.put(new Integer(2), new JLabel(DataHolder.data.getDimensionName(1)));
-		labels.put(new Integer(1), new JLabel(DataHolder.data.getDimensionName(2)));
-		labels.put(new Integer(0), new JLabel(DataHolder.data.getDimensionName(3)));
+		JLabel temp = new JLabel(DataHolder.data.getDimensionName(0));
+		temp.setForeground(Color.RED);
+		labels.put(new Integer(3), temp);
+		temp = new JLabel(DataHolder.data.getDimensionName(1));
+		temp.setForeground(Color.GREEN);
+		labels.put(new Integer(2), temp);
+		temp = new JLabel(DataHolder.data.getDimensionName(2));
+		temp.setForeground(Color.BLUE);
+		labels.put(new Integer(1), temp);
+		temp = new JLabel(DataHolder.data.getDimensionName(3));
+		temp.setForeground(Color.MAGENTA);
+		labels.put(new Integer(0), temp);
 		chooserGraph.setLabelTable(labels);
 	}
 	
@@ -423,13 +439,13 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		else if (slider.equals(rangeHeat))
 			dim = 4;
 		else {
-			if (slider.equals(chooser3D)){
+			if (slider.equals(step3D)){
 				dim = DataHolder.fixedDimensions[0];
 			}
-			else if (slider.equals(chooser2D)){
+			else if (slider.equals(step2D)){
 				dim = DataHolder.fixedDimensions[1];
 			}
-			else if(slider.equals(chooserGraph)){
+			else if(slider.equals(stepGraph)){
 				dim = DataHolder.fixedDimensions[2];
 			}
 		}
@@ -573,9 +589,11 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		ArrayList<Integer> pnts = new ArrayList<>();
 		// chooser 3D
 		if (e.getSource().equals(chooser3D)){
 			DataHolder.fixedDimensions[0] = 3 - chooser3D.getValue();
+			pnts.add(3 - chooser3D.getValue());
 		}
 		// chooser 2D
 		if (e.getSource().equals(chooser2D)){
@@ -584,6 +602,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 			}
 			else {
 				DataHolder.fixedDimensions[1] = (3 - chooser2D.getValue());
+				pnts.add(3 - chooser2D.getValue());
 			}
 		}
 		// chooser graph
@@ -592,6 +611,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 				chooserGraph.setValue(3 - DataHolder.fixedDimensions[2]);
 			}else {
 				DataHolder.fixedDimensions[2] = 3 - chooserGraph.getValue();
+				pnts.add(3 - chooserGraph.getValue());
 			}
 		}
 		
@@ -603,6 +623,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		if (!temp.contains(DataHolder.fixedDimensions[1])){
 			DataHolder.fixedDimensions[1] = temp.get(0);
 			chooser2D.setValue(3 - DataHolder.fixedDimensions[1]);
+			pnts.add(DataHolder.fixedDimensions[1]);
 		}
 		
 		temp.clear();
@@ -612,13 +633,12 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		if (!temp.contains(DataHolder.fixedDimensions[2])){
 			DataHolder.fixedDimensions[2] = temp.get(0);
 			chooserGraph.setValue(3 - DataHolder.fixedDimensions[2]);
+			pnts.add(DataHolder.fixedDimensions[2]);
 		}
 
 		// check all steps
-		checkSlider(0, range1);
-		checkSlider(1, range2);
-		checkSlider(2, range3);
-		checkSlider(3, range4);
+		for (int i : pnts)
+			checkSlider(i, i == 0 ? range1 : i == 1 ? range2 : i == 2 ? range3 : range4);
 		
 		DataHolder.updatePlotter();
 		
