@@ -1,15 +1,3 @@
-package heatMap;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.text.DecimalFormat;
-
-import javax.swing.JPanel;
-
-import Data.DataHolder;
-
 /**
  *
  * <p><strong>Title:</strong> HeatMap</p>
@@ -66,7 +54,35 @@ import Data.DataHolder;
  * @version 1.6
  */
 
-public class HeatMap extends JPanel
+package heatMap;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import Data.DataHolder;
+
+//DONE: HM) Hover - display temperature
+//TO.DO.DEPR: HM) Hi: add right-mouse context button
+//DONE: HM) +Hi: scale temperature bar gradient
+//TO DO: HM) allow for vertical axis orientation (and orient map accordingly)
+//DONE: HM) +Hi: Coloured Axes with Correct Names
+//DONE: Fix font Smoothing on heatMap Panel
+
+public class HeatMap extends JPanel implements MouseMotionListener
 {
 	/**
 	 * Generated Serial version
@@ -81,6 +97,30 @@ public class HeatMap extends JPanel
 	private float yMin;
 	private float yMax;
 
+	private static final int BORDER_L = 30;
+	private static final int BORDER_R = 60;
+	private static final int BORDER_T = 30;
+	private static final int BORDER_B = 30;
+	private static final int BORDER_X = BORDER_L + BORDER_R; 
+	private static final int BORDER_Y = BORDER_T + BORDER_B; 
+
+	int lastselectedX, lastselectedY = -1;
+
+	private int tempMinObserved = Integer.MAX_VALUE;
+	private int tempMaxObserved = 0;
+
+	private DecimalFormat df = new DecimalFormat("##.##");
+
+	private float tempSmallest = Float.MIN_VALUE;
+	private float tempLargest = Float.MAX_VALUE;
+
+	private boolean orientationX = true;
+
+	private int drawPanelHeight, drawPanelWidth = 1;
+	private float scaleX, scaleY = 1;
+
+	private int[] fixedAxes = new int[]{-1,-1,-1,-1};
+
 	private String title;
 	private String xAxis;
 	private String yAxis;
@@ -93,40 +133,202 @@ public class HeatMap extends JPanel
 	private boolean drawYTicks = false;
 
 	private Color[] colors;
+	private Color[] axesColors = {Color.RED,Color.GREEN,Color.BLUE, Color.MAGENTA};
 	private Color bg = Color.white;
 	private Color fg = Color.black;
 	private Color pbg = this.getBackground();
 
 	private BufferedImage bufferedImage;
 	private Graphics2D bufferedGraphics;
-	
-	private float tempSmallest = Float.MIN_VALUE;
-	private float tempLargest = Float.MAX_VALUE;
 
+	public static boolean debugOn = !true;
+	public static void debug(String paramInput){
+		if (debugOn)
+			System.out.println(paramInput);
+	}
+	public static void debugn(String paramInput){
+		if (debugOn)
+			System.out.print(paramInput);
+	}
+	public static void debug(){
+		if (debugOn)
+			debug("");
+	}
+	public static void debugn(){
+		if (debugOn)
+			debugn("");
+	}
 	/**
 	 * @param data The data to display, must be a complete array (non-ragged)
 	 * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with they=0 row at the bottom of the screen.
 	 * @param colors A variable of the type Color[]. See also {@link #createMultiGradient} and {@link #createGradient}.
 	 */
-	public HeatMap(float[][] data, boolean useGraphicsYAxis, Color[] colors)
+	public HeatMap(float[][] paramData, boolean useGraphicsYAxis, Color[] colors)
 	{
 		super();
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
 
 		updateGradient(colors);
-		updateData(data, useGraphicsYAxis);
+		updateData(paramData, useGraphicsYAxis);
 
-		this.setPreferredSize(new Dimension(60+data.length, 60+data[0].length));
+		this.setPreferredSize(new Dimension(60+paramData.length, 60+paramData[0].length));
 		this.setDoubleBuffered(true);
+		this.setFont(new Font("Tahoma",Font.PLAIN,12));
 
 		this.bg = Color.white;
 		this.fg = Color.black;
 
+
+		this.addMouseListener(new MouseListener() {
+			//			@Override
+			//			public void mouseReleased(MouseEvent e) {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				//        HeatMap.debug(":MOUSE_RELEASED_EVENT:");
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				//       HeatMap.debug("----------------------------------\n:MOUSE_PRESSED_EVENT:");
+				mouseClicked(e);
+
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				//     HeatMap.debug(":MOUSE_EXITED_EVENT:");
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				//    HeatMap.debug(":MOUSE_ENTER_EVENT:");
+				//				displayTemperature(e.getX(),e.getY(),1000);
+				//								ToolTipManager.sharedInstance().setInitialDelay(500);
+				//mouseClicked(e);
+				HeatMap.debug("Mouse Entered Panel");
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				//                HeatMap.debug(":MOUSE_CLICK_EVENT:");
+				JComponent component = (JComponent)e.getSource();
+
+				int mX = e.getX();
+				int mY = e.getY();
+				int dX = getDPX(mX);
+				int dY = getDPY(mY);
+				float tValue =getValue(dX,dY); 
+				//DONE-DEPR: HM) +Hi: indicate the axes-relative values
+				float relX = xMin+ (float)((mX-BORDER_L) / (1.0*drawPanelWidth))*(xMax-xMin);
+				float relY = yMin+ (float)((mY-BORDER_T) / (1.0*drawPanelHeight))*(yMax-yMin);
+				//				HeatMap.debug
+
+
+				MouseEvent phantom = new MouseEvent(
+						component,
+						MouseEvent.MOUSE_MOVED,
+						System.currentTimeMillis(),
+						0,
+						e.getX(),
+						e.getY(),
+						0,
+						false);
+
+				//                HeatMap.debug();
+				//				HeatMap.debug("Fixed Dimensions are: ("+fixedAxes[0]+","+fixedAxes[1]+","+fixedAxes[2]+"|"+fixedAxes[3]+")");
+				if (tValue >= 0){
+//					ToolTipManager.sharedInstance().mouseMoved(phantom);
+					component.setToolTipText("("+dX+","+dY+"); ("+relX+","+relY+");\nTemperature: "+df.format(tValue)); // DONE: check if cropping axes returns correct value
+
+//					displayTemperature(mX,mY,1000);
+				}
+				else{
+					component.setToolTipText(null);
+				}
+
+				//				ToolTipManager.sharedInstance().setInitialDelay(0);
+
+			}
+	
+		});
+		/*            public void mouseOver(MouseEvent e){
+//                HeatMap.debug("mouseOver");
+            }*/
+		this.addMouseMotionListener(new MouseMotionListener() {
+			public void mouseDragged(MouseEvent e){
+//				HeatMap.debug("mouseDragged");
+			}
+			public void mouseMoved(MouseEvent e){
+				if ((e.getX()>BORDER_L)&&(e.getX()<getWidth()-BORDER_R)&&(e.getY()>BORDER_T)&&(e.getY()<getHeight()-BORDER_B)){
+//					HeatMap.debug("mouse inside panel "+Math.random());
+					JComponent component = (JComponent)e.getSource();
+
+					int mX = e.getX();
+					int mY = e.getY();
+					int dX = getDPX(mX);
+					int dY = getDPY(mY);
+					float tValue =getValue(dX,dY); 
+
+					/*
+					MouseEvent phantom = new MouseEvent(
+							component,
+							MouseEvent.MOUSE_MOVED,
+							System.currentTimeMillis(),
+							0,
+							e.getX(),
+							e.getY(),
+							0,
+							false);
+
+					//                HeatMap.debug();
+					//				HeatMap.debug("Fixed Dimensions are: ("+fixedAxes[0]+","+fixedAxes[1]+","+fixedAxes[2]+"|"+fixedAxes[3]+")");
+					 */					if (tValue >= 0){
+						 //DONE-DEPR: HM) +Hi: indicate the axes-relative values
+						 float relX = xMin+ (float)((mX-BORDER_L) / (1.0*drawPanelWidth))*(xMax-xMin);
+						 float relY = yMin+ (float)((mY-BORDER_T) / (1.0*drawPanelHeight))*(yMax-yMin);
+						 //				HeatMap.debug
+//						 component.setToolTipText("("+dX+","+dY+"); ("+relX+","+relY+");\r\nTemperature: "+df.format(tValue)); // DONE: check if cropping axes returns correct value
+					/*	 HeatMap.debug(""+DataHolder.data.getDimensionName(fixedAxes[0]).charAt(0)+"# "+DataHolder.getFixedDimensionStep(fixedAxes[0])+", "+
+								 DataHolder.data.getDimensionName(fixedAxes[1]).charAt(0)+"# "+DataHolder.getFixedDimensionStep(fixedAxes[1])+", "+
+								 DataHolder.data.getDimensionName(fixedAxes[2]).charAt(0)+": "+DataHolder.getFixedDimensionStep(fixedAxes[2])+", "+
+								 DataHolder.data.getDimensionName(fixedAxes[3]).charAt(0)+": "+DataHolder.getFixedDimensionStep(fixedAxes[3])+", "+
+								 ", Temperature: "+df.format(tValue));*/
+						 float[] currentValues = getValues(mX,mY);
+						 DecimalFormat df2 = new DecimalFormat("##.####");
+						 component.setToolTipText(""+DataHolder.data.getDimensionName(fixedAxes[0]).charAt(0)+"# "+df2.format(currentValues[0])+", "+
+								 DataHolder.data.getDimensionName(fixedAxes[1]).charAt(0)+"# "+df2.format(currentValues[1])+", "+
+								 DataHolder.data.getDimensionName(fixedAxes[2]).charAt(0)+": "+df2.format(currentValues[2])+", "+
+								 DataHolder.data.getDimensionName(fixedAxes[3]).charAt(0)+": "+df2.format(currentValues[3])+", "+
+								 " Temperature: "+df.format(tValue));
+						 //	ToolTipManager.sharedInstance().mouseMoved(phantom);
+//						 displayTemperature(mX,mY,1000);
+					 }
+					 else{
+						 component.setToolTipText(null);
+					 }
+				}
+				else
+				{
+
+				}
+			}
+		});
+
 		// this is the expensive function that draws the data plot into a 
 		// BufferedImage. The data plot is then cheaply drawn to the screen when
 		// needed, saving us a lot of time in the end.
+		updateData(paramData, false);
 		drawData();
-	}
 
+	}
+	public void mouseDragged(MouseEvent e){
+//		HeatMap.debug("mouseDragged");
+	}
+	public void mouseMoved(MouseEvent e){
+//		HeatMap.debug("mouseMoved");
+	}
 	/**
 	 * Specify the coordinate bounds for the map. Only used for the axis labels, which must be enabled seperately. Calls repaint() when finished.
 	 * @param xMin The lower bound of x-values, used for axis labels
@@ -141,11 +343,111 @@ public class HeatMap extends JPanel
 
 		repaint();
 	}
+
+	public float[] getValues(int xParam, int yParam){
+		/*""+DataHolder.data.getDimensionName(fixedAxes[0]).charAt(0)+"# "+DataHolder.getFixedDimensionStep(fixedAxes[0])+
+		 DataHolder.data.getDimensionName(fixedAxes[1]).charAt(0)+"# "+DataHolder.getFixedDimensionStep(fixedAxes[1])+
+		 DataHolder.data.getDimensionName(fixedAxes[2]).charAt(0)+": "+DataHolder.getFixedDimensionStep(fixedAxes[2])+
+		 DataHolder.data.getDimensionName(fixedAxes[3]).charAt(0)+": "+DataHolder.getFixedDimensionStep(fixedAxes[3])+
+		 " Temperature: "+df.format(tValue)*/
+		
+		//remove padding if not using DP[XY]
+//		xParam -= BORDER_L;
+//		yParam -= BORDER_T;
+		
+		float[] retArray = new float[5];
+		for(int i = 0; i < 4; ++i){
+//			HeatMap.debugn("\tReading "+DataHolder.data.getDimensionName(fixedAxes[i]));
+			float rangeMin = DataHolder.data.getMinData(fixedAxes[i]); // DataHolder.getMinFilter(fixedAxes[i])
+			float rangeMax = DataHolder.data.getMaxData(fixedAxes[i]); //DataHolder.getMaxFilter(fixedAxes[i])
+//			HeatMap.debugn(" stepping "+DataHolder.getFixedDimensionStep(fixedAxes[i])+" (l:"+DataHolder.data.getLength(fixedAxes[i])+")");
+			if (i < 2)
+				retArray[i] = (float)((rangeMin+DataHolder.getFixedDimensionStep(fixedAxes[i])*1.0*(rangeMax-rangeMin))/(1.0*DataHolder.data.getLength(fixedAxes[i])));
+			else if (i==2) // x-axis
+				retArray[2] = (float)(1.0*getDPX(xParam)*((rangeMax-rangeMin)/(data.length)));
+			else if (i==3) // y-axis
+				retArray[3] = (float)(1.0*getDPY(yParam)*((rangeMax-rangeMin)/(data[0].length)));
+			HeatMap.debug("max["+i+"]:"+rangeMax+"; min:"+rangeMin);
+		}
+//		HeatMap.debug();
+/*		retArray[2] = getValue(getDPX(xParam),getDPY(yParam));
+		retArray[3] = data[]*/
+		
+		retArray[4] = getValue(getDPX(xParam),getDPY(yParam));
+//		for(int i = 0; i < 5; ++i)
+//			HeatMap.debugn("\tretArray["+i+"]: "+retArray[i]);
+//		HeatMap.debug();
+		return retArray;
+	}
+	
+	public void displayTemperature(int paramX, int paramY, int paramTime){
+		//		HeatMap.debug("entering displayTemperature...");
+		//		float tValue = getValue(paramX,paramY);
+		/*try{
+			Thread.sleep(paramTime);}
+		catch (Exception e) {
+		}*/
+		//		HeatMap.debug("Leaving displayTemperature ("+tValue+")...");
+		lastselectedX = paramX;
+		lastselectedY = paramY;
+	}
+
 	public void setCoordinateBounds(double xMin, double xMax, double yMin, double yMax)
 	{
 		setCoordinateBounds((float)(xMin), (float)(xMax), (float)(yMin), (float)(yMax));
 	}
 
+
+	public void updateFixedAxes(){
+
+
+		for (int i = 0; i < 3; ++i)
+			fixedAxes[i] = DataHolder.getFixedDimension(i);
+
+		fixedAxes[3] = -1;
+
+		/*	int odd = -1;
+		for (int i = 0; i < 4; ++i) {
+			odd = (fixedAxes[i] == odd) ? i : -1;
+			HeatMap.debugn("\t"+i);
+			if (odd != -1)
+				 fixedAxes[3] = i; // break;
+		}*/
+		//		fixedAxes[3] = odd; 
+		fixedAxes[3] = 6;
+		for (int i = 0; i < 3; ++i){
+			fixedAxes[3] -= fixedAxes[i];	
+		}
+
+
+	}
+	/**
+	 * Get the data-point X-coordinate currently selected.
+	 * @param xPos The current mouse x-value within the panel
+	 */
+	public int getDPX(int xPos){ // DONE: HM) fix getDPX
+		if((xPos < BORDER_L) || (xPos > this.getWidth()-BORDER_R)){
+			return -1;
+		}
+		xPos -= BORDER_L;
+		int retValX = data.length -1 - (int)(data.length * ((drawPanelWidth-xPos)/(1.0*drawPanelWidth)));
+		//		HeatMap.debugn("\nxMouse: (abs:"+xPos+") "+retValX);
+		return retValX;
+	}
+	/**
+	 * Get the data-point Y-coordinate currently selected.
+	 * @param yPos The current mouse y-value within the panel
+	 */
+	public int getDPY(int yPos){ // DONE: HM) fix getDPY
+		if((yPos < BORDER_T) || (yPos > this.getHeight()-BORDER_B)){
+			return -1;
+		}
+		yPos -= BORDER_T;
+		int retValY = (int)(data[0].length * ((drawPanelHeight-yPos)/(1.0*drawPanelHeight)));
+		//		HeatMap.debug("; yMouse: (abs:"+yPos+") "+retValY);
+
+		return retValY;
+	}
 	/**
 	 * Specify the coordinate bounds for the X-range. Only used for the axis labels, which must be enabled seperately. Calls repaint() when finished.
 	 * @param xMin The lower bound of x-values, used for axis labels
@@ -212,7 +514,6 @@ public class HeatMap extends JPanel
 	public void setYMaxCoordinateBounds(float yMax)
 	{
 		this.yMax = yMax;
-
 		repaint();
 	}
 
@@ -222,9 +523,14 @@ public class HeatMap extends JPanel
 	 */
 	public void setTitle(String title)
 	{
+		//DONE: HM) +Lo: Make Title Bold
+		Font tF = bufferedGraphics.getFont();
+		//		bufferedGraphics.setFont(font)(font)ont(bufferedGraphics.getFont().get)
+		bufferedGraphics.setFont(new Font(tF.getName(),Font.BOLD,tF.getSize()+4));
 		this.title = title;
 
 		repaint();
+		bufferedGraphics.setFont(tF);
 	}
 
 	/**
@@ -234,8 +540,49 @@ public class HeatMap extends JPanel
 	public void setDrawTitle(boolean drawTitle)
 	{
 		this.drawTitle = drawTitle;
-
 		repaint();
+	}
+	/**
+	 * Gets the color under the mouse cursor.
+	 * @param x Horizontal offset
+	 * @param y Vertical offset
+	 */
+	public Color getColor(int x, int y){
+		if (x<0||y<0)
+			return Color.BLACK;
+		//DONE: HM) Get Color/value under cursor
+		//		HeatMap.debug("getColor: ("+x+","+y+")");
+		y = data[0].length - y -1;
+//		HeatMap.debug("Value: (d"+data[x][y]+", dCI"+dataColorIndices[x][y]+") sizeof(di):["+dataColorIndices.length+","+dataColorIndices[0].length+"]");
+		//		int minX, minY, maxX, maxY = 0;
+		//		minX = this.getX();
+		//		minY = this.getY();
+		//		maxX = minX + drawPanelWidth;
+		//		maxY = minY + drawPanelWidth;
+		//		
+		//		int dX = data.length-(int)(x / scaleX);
+		//		int dY = (int)(y / scaleX);
+		//		HeatMap.debug("Window Loc: ("+minX+","+minY+","+maxX+","+maxY+"); Scale Factor: "+scaleX+":"+scaleY);
+		//		bufferedGraphics.drawRect(minX+50, minY+50, drawPa-100, maxX-minY-100);
+		return (Color)colors[dataColorIndices[x][y]];
+		//		return this.bufferedGraphics.getColor();
+		// return colors[(int)(data[x][y])];
+	}
+	/**
+	 * Gets the color under the mouse cursor.
+	 * @param x Horizontal offset
+	 * @param y Vertical offset
+	 */
+	public float getValue(int x, int y){
+
+		if (x<0||y<1)
+			return -1;
+		//DONE: HM) Get value under cursor
+//		HeatMap.debug("getValue: ("+x+","+y+")");
+		y = data[0].length - y -1; // TODO: HM) !#Cnfm Ensure bottom-row displays tooltips when clicked
+		//		HeatMap.debug("Value: ("+df.format(data[x][y])+", dCI"+dataColorIndices[x][y]+")\tsizeof(dCI[][]):["+dataColorIndices.length+","+dataColorIndices[0].length+"]");
+		//		
+		return data[x][y];
 	}
 
 	/**
@@ -247,6 +594,26 @@ public class HeatMap extends JPanel
 		this.xAxis = xAxisTitle;
 
 		repaint();
+	}
+
+	/**
+	 * Updates the X-Axis title. Calls repaint() when finished.
+	 * @param xAxisTitle The new X-Axis title
+	 * @param xColor The new X-Axis title color
+	 */
+	public void setXAxisTitle(String xAxisTitle, Color xColor)
+	{
+//		HeatMap.debug("setXAxisTitle: "+xAxisTitle+" in "+xColor);
+		Color tFG = this.getForeground();
+		this.setForeground(xColor);
+		this.setColorForeground(xColor);
+		fg = xColor;
+		this.xAxis = xAxisTitle;
+
+		repaint();
+		this.setForeground(tFG);
+		this.setColorForeground(tFG);
+		fg = tFG;
 	}
 
 	/**
@@ -267,8 +634,25 @@ public class HeatMap extends JPanel
 	public void setYAxisTitle(String yAxisTitle)
 	{
 		this.yAxis = yAxisTitle;
-
 		repaint();
+	}
+	/**
+	 * Updates the Y-Axis title. Calls repaint() when finished.
+	 * @param yAxisTitle The new Y-Axis title
+	 * @param yColor The new Y-Axis title color
+	 */
+	public void setYAxisTitle(String yAxisTitle, Color yColor)
+	{	
+//		HeatMap.debug("setYAxisTitle: "+yAxisTitle+" in "+yColor);
+		Color tFG = this.getForeground();
+		this.setForeground(yColor);
+		this.setColorForeground(yColor);
+		fg = yColor;
+		this.yAxis = yAxisTitle;
+		repaint();
+		this.setForeground(tFG);
+		this.setColorForeground(tFG);
+		fg = tFG;
 	}
 
 	/**
@@ -355,6 +739,11 @@ public class HeatMap extends JPanel
 
 			repaint();
 		}
+		else{
+			HeatMap.debug("Data is null");
+			//			HeatMap.debug("");
+			//			HeatMap.debug("this.data size is: "+sizeOf(data));
+		}
 	}
 
 	/**
@@ -368,25 +757,12 @@ public class HeatMap extends JPanel
 		// in order to assign proper colors.
 		float largest = DataHolder.data.getMaxData(4);
 		float smallest = DataHolder.data.getMinData(4);
-		/*float tempLargest = DataHolder.getMaxFilter(4);
-		float tempSmallest = DataHolder.getMinFilter(4);*/
-		
-//		for (int x = 0; x < data.length; x++)
-//		{
-//			for (int y = 0; y < data[0].length; y++)
-//			{
-//				//if (data[x][y] >= 0) {
-//				largest = Math.max(Math.abs(data[x][y]), largest);
-//				smallest = Math.min(Math.abs(data[x][y]), smallest);
-//				//}
-//			}
-//		}
 
 		float range = largest - smallest;
 
 		// dataColorIndices is the same size as the data array
 		// It stores an int index into the color array
-		dataColorIndices = new int[data.length][data[0].length];    
+		dataColorIndices = new int[data.length][data[0].length]; //DONE-UNRP: HM) Hi: size dataColorIndices[][]  properly for read data    
 
 		//assign a Color to each data point
 		for (int x = 0; x < data.length; x++)
@@ -395,126 +771,54 @@ public class HeatMap extends JPanel
 			{
 				float norm = (float)(Math.abs(data[x][y]) - smallest) / range; // 0 < norm < 1
 				int colorIndex = (int) Math.floor(norm * (colors.length - 1));
-				// if (data[x][y] < 0) System.out.println(""+colorIndex+"; dataCI: "+dataColorIndices[x][y]);
+				// if (data[x][y] < 0) HeatMap.debug(""+colorIndex+"; dataCI: "+dataColorIndices[x][y]);
 				dataColorIndices[x][y] = colorIndex;
 			}
 		}
 		tempSmallest = smallest;
 		tempLargest = largest;
+		tempMinObserved = (int)Math.min(smallest, tempMinObserved);
+		tempMaxObserved = (int)Math.max(largest, tempMaxObserved);
 	}
 
-	/**
-	 * This function generates data that is not vertically-symmetric, which
-	 * makes it very useful for testing which type of vertical axis is being
-	 * used to plot the data. If the graphics Y-axis is used, then the lowest
-	 * values should be displayed at the top of the frame. If the non-graphics
-	 * (mathematical coordinate-system) Y-axis is used, then the lowest values
-	 * should be displayed at the bottom of the frame.
-	 * @return float[][] data values of a simple vertical ramp
-	 */
-	public static float[][] generateRampTestData()
-	{
-		float[][] data = new float[10][10];
-		for (int x = 0; x < 10; x++)
-		{
-			for (int y = 0; y < 10; y++)
-			{
-				data[x][y] = y;
-			}
-		}
-
-		return data;
-	}
-
-	/**
-	 * This function generates an appropriate data array for display. It uses
-	 * the function: z = sin(x)*cos(y). The parameter specifies the number
-	 * of data points in each direction, producing a square matrix.
-	 * @param dimension Size of each side of the returned array
-	 * @return float[][] calculated values of z = sin(x)*cos(y)
-	 */
-	public static float[][] generateSinCosData(int dimension)
-	{
-		if (dimension % 2 == 0)
-		{
-			dimension++; //make it better
-		}
-
-		float[][] data = new float[dimension][dimension];
-		float sX, sY; //s for 'Scaled'
-
-		for (int x = 0; x < dimension; x++)
-		{
-			for (int y = 0; y < dimension; y++)
-			{
-				sX = (float)(20 * Math.PI * (x / (float) dimension)); // 0 < sX < 2 * Pi
-				sY = (float)(20 * Math.PI * (y / (float) dimension)); // 0 < sY < 2 * Pi
-				data[x][y] = (float)(Math.sin(sX) * Math.cos(sY));
-			}
-		}
-
-		return data;
-	}
-
-	/**
-	 * This function generates an appropriate data array for display. It uses
-	 * the function: z = Math.cos(Math.abs(sX) + Math.abs(sY)). The parameter 
-	 * specifies the number of data points in each direction, producing a 
-	 * square matrix.
-	 * @param dimension Size of each side of the returned array
-	 * @return float[][] calculated values of z = Math.cos(Math.abs(sX) + Math.abs(sY));
-	 */
-	public static float[][] generatePyramidData(int dimension)
-	{
-		if (dimension % 2 == 0)
-		{
-			dimension++; //make it better
-		}
-
-		float[][] data = new float[dimension][dimension];
-		float sX, sY; //s for 'Scaled'
-
-		for (int x = 0; x < dimension; x++)
-		{
-			for (int y = 0; y < dimension; y++)
-			{
-				sX = 6 * (x / (float) dimension); // 0 < sX < 6
-				sY = 6 * (y / (float) dimension); // 0 < sY < 6
-				sX = sX - 3; // -3 < sX < 3
-				sY = sY - 3; // -3 < sY < 3
-				data[x][y] = (float)(Math.cos(Math.abs(sX) + Math.abs(sY)));
-			}
-		}
-
-		return data;
-	}
 
 	/**
 	 * Updates the data display, calls drawData() to do the expensive re-drawing
 	 * of the data plot, and then calls repaint().
-	 * @param data The data to display, must be a complete array (non-ragged)
+	 * @param paramData The data to display, must be a complete array (non-ragged)
 	 * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with the y=0 row at the bottom of the screen.
 	 */
-	public void updateData(float[][] data, boolean useGraphicsYAxis)
-	{
-		
+	public void updateData(float[][] paramData, boolean useGraphicsYAxis)
+	{ // TO.DO.DEPR: HM) Lo: Do NOT Copy Array!!
+
+		if (data!=null){
+			scaleX=(float)((drawPanelWidth)/(1.0*paramData.length));
+			scaleY=(float)((drawPanelHeight)/(1.0*paramData[0].length));
+		}
+		HeatMap.debug("DrawPanel Size: ("+drawPanelWidth+","+drawPanelHeight+") of ("+getWidth()+","+getHeight()+")");
+
+		if (data!=null)
+			HeatMap.debug("Scales: ("+scaleX+","+scaleY+","+data.length+","+data[0].length+");");
+
+		HeatMap.debug("dataSize: ["+DataHolder.data.getLength(0)+","+DataHolder.data.getLength(1)+","+DataHolder.data.getLength(2)+","+DataHolder.data.getLength(3)+"]");
+		HeatMap.debug("Length of colors: "+colors.length);
 
 		tempLargest = DataHolder.getMaxFilter(4);
 		tempSmallest = DataHolder.getMinFilter(4);
-		
-		this.data = new float[data.length][data[0].length];
-		for (int ix = 0; ix < data.length; ix++)
+
+		this.data = new float[paramData.length][paramData[0].length];
+		for (int ix = 0; ix < paramData.length; ix++)
 		{
-			for (int iy = 0; iy < data[0].length; iy++)
+			for (int iy = 0; iy < paramData[0].length; iy++)
 			{
-//				// we use the graphics Y-axis internally
-//				if (useGraphicsYAxis)
-//				{
-//					this.data[ix][iy] = data[ix][iy];
-//				}
-//				else
+				//				// we use the graphics Y-axis internally
+				//				if (useGraphicsYAxis)
+				//				{
+				//					this.data[ix][iy] = data[ix][iy];
+				//				}
+				//				else
 				{
-					float datapnt = data[ix][data[0].length - iy - 1];
+					float datapnt = paramData[ix][paramData[0].length - iy - 1];
 					if (datapnt > tempLargest)
 						datapnt = -1;
 					if (datapnt < tempSmallest)
@@ -524,11 +828,18 @@ public class HeatMap extends JPanel
 			}
 		}
 
+		// DONE: HM) +Hi: Update titles
+		// TODO: HM) #Cnfm Ensure Map Orientation (dup?)
+		updateFixedAxes();
+		setXAxisTitle(DataHolder.data.getDimensionName(fixedAxes[2]), axesColors[fixedAxes[2]]);
+		setYAxisTitle(DataHolder.data.getDimensionName(fixedAxes[3]), axesColors[fixedAxes[3]]);
 		updateDataColors();
 
 		drawData();
 
 		repaint();
+		//		HeatMap.debug("Calling GC");
+		//		System.gc(); // DONE: HM) +Lo: remove manual garbage collection
 	}
 
 	/**
@@ -560,17 +871,21 @@ public class HeatMap extends JPanel
 		{
 			for (int y = 0; y < data[0].length; y++)
 			{
-				bufferedGraphics.setColor(colors[dataColorIndices[x][y]]);
+				//				HeatMap
 				if (data[x][y] < 0)
-				  bufferedGraphics.setColor(pbg);
-				
+					bufferedGraphics.setColor(pbg);
+				else
+					bufferedGraphics.setColor(colors[dataColorIndices[x][y]]);
+
 				bufferedGraphics.fillRect(x, y, 1, 1);
+				//				HeatMap.debugn("\t"+colors[dataColorIndices[x][y]]);
 			}
+			//			HeatMap.debug();
 		}
-		
+
 		// Find the location on the dimension that is not plotted the 2D Graph and indicate it 
 		//int graphFixed = DataHolder.getFixedDimension(DataHolder.plotterGraph.getFixedDimension());
-		//System.out.println("Graph Fixed: "+graphFixed);
+		//HeatMap.debug("Graph Fixed: "+graphFixed);
 	}
 
 	/**
@@ -581,7 +896,15 @@ public class HeatMap extends JPanel
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
+
+		updateFixedAxes();
+
 		Graphics2D g2d = (Graphics2D) g;
+		RenderingHints rh = new RenderingHints(
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		g2d.setRenderingHints(rh);
+		//		g2d.
 
 		int width = this.getWidth();
 		int height = this.getHeight();
@@ -606,28 +929,33 @@ public class HeatMap extends JPanel
 		// redrew the data plot each time we had to repaint the screen.
 		g2d.drawImage(bufferedImage,
 				31, 31,
-				width - 60,
-				height - 30,
+				width - BORDER_R,
+				height - BORDER_B,
 				0, 0,
 				bufferedImage.getWidth(), bufferedImage.getHeight(),
 				null);
 
+		drawPanelWidth = width - BORDER_X;
+		drawPanelHeight = height - BORDER_Y;
+
 		// border
 		g2d.setColor(fg);
-		g2d.drawRect(30, 30, width - 90, height - 60);
+		g2d.drawRect(BORDER_L, BORDER_T, drawPanelWidth, drawPanelHeight);
 
 		// title
 		if (drawTitle && title != null)
 		{
+			g2d.setFont(new Font("Tahoma",Font.BOLD,16));
 			g2d.drawString(title, (width / 2) - 4 * title.length(), 20);
+			g2d.setFont(new Font("Tahoma",Font.PLAIN,12));
 		}
 
-		// axis ticks - ticks start even with the bottom left coner, end very close to end of line (might not be right on)
+		// axis ticks - ticks start even with the bottom left corner, end very close to end of line (might not be right on)
 		int numXTicks = (width - 90) / 50;
 		int numYTicks = (height - 60) / 50;
 
 		String label = "";
-		DecimalFormat df = new DecimalFormat("##.##");
+		//		DecimalFormat df = new DecimalFormat("##.##");
 
 		// Y-Axis ticks
 		if (drawYTicks)
@@ -636,9 +964,9 @@ public class HeatMap extends JPanel
 			int yDist = (int) ((height - 60) / (float) numYTicks); //distance between ticks
 			for (int y = 0; y <= numYTicks; y++)
 			{
-			
+
 				g2d.drawLine(26, height - 30 - y * yDist, 30, height - 30 - y * yDist);
-				
+
 				label = df.format(((y / (float) numYTicks) * (yMax - yMin)) + yMin);
 				int labelY = height - 30 - y * yDist - 4 * label.length();
 				//to get the text to fit nicely, we need to rotate the graphics
@@ -646,22 +974,44 @@ public class HeatMap extends JPanel
 				g2d.drawString(label, labelY, -14);
 				g2d.rotate( -Math.PI / 2);
 			}
-			
+
 			int gmf = (int)(DataHolder.getMinFilter(DataHolder.getFixedDimension(2)));
 			int steps = (int)(DataHolder.getMaxFilter(DataHolder.getFixedDimension(2)) - DataHolder.getMinFilter(DataHolder.getFixedDimension(2)))+1;
 			for (int y = 0; y < steps; y++) {
 
+				//TODO: HM) #Cnfm: if x-axis is not lower in order to y-axis in fixed axes, orientationx = false.
+				orientationX = (fixedAxes[2]<fixedAxes[3]);
+
 				if ((y+gmf) == selected) // indicate the step over the bg (and fg)
 				{
+					HeatMap.debug("OrientationX: "+orientationX+"; ");
+					if (orientationX){
+						//TODO: HM) #Cnfm Ensure marker display once data is loaded
+						//TODO: HM) #Cnfm Case Axes(230|1)+Data; Cannot find graph horiz line when stepping
+						// Precision Underflow?
+						int offsetY = height - BORDER_T - (int)((y+0.5) * (height-BORDER_Y)/(1.0*steps));
+						// HeatMap.debug("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
+						g2d.setColor(bg);
+						g2d.setColor(Color.black);
+						g2d.fillRect(31, offsetY + 1 , width-BORDER_X,1);
+						g2d.setColor(Color.red);
+						g2d.fillRect(BORDER_L-4, offsetY , 5,3);
+						g2d.fillRect(width-BORDER_R, offsetY , 5,3);
+						g2d.setColor(fg);
+					} else {		
+						//DONE: HM) Fix this for vertical selection bar (HeatMap)
+						//TODO: HM) #Cnfm Case Axes(031|2); Cannot find graph dataset
 
-					int offsetY = height - 30 - (int)((y+0.5) * (height-60)/(1.0*steps));
-					// System.out.println("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
-					g2d.setColor(bg);
-					g2d.fillRect(31, offsetY + 1 , width-90,1);
-					g2d.setColor(Color.red);
-					g2d.fillRect(26, offsetY , 5,3);
-					g2d.fillRect(width-60, offsetY , 5,3);
-					g2d.setColor(fg);
+						int offsetY = /*width -*/ BORDER_L + (int)((y+0.5) * (width-BORDER_X)/(1.0*steps));
+						HeatMap.debug("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
+						g2d.setColor(bg);
+						g2d.setColor(Color.black);
+						g2d.fillRect(offsetY + 1, 31 ,1, height-BORDER_Y);
+						g2d.setColor(Color.red);
+						g2d.fillRect(offsetY,26, 3, 5);
+						g2d.fillRect(offsetY,height-BORDER_B ,3, 5);
+						g2d.setColor(fg);
+					}
 				}
 			}
 		}
@@ -670,14 +1020,17 @@ public class HeatMap extends JPanel
 		if (drawYTitle && yAxis != null)
 		{
 			//to get the text to fit nicely, we need to rotate the graphics
+			g2d.setColor(axesColors[fixedAxes[3]]);
 			g2d.rotate(Math.PI / 2);
 			g2d.drawString(yAxis, (height / 2) - 4 * yAxis.length(), -3);
 			g2d.rotate(-Math.PI);
-			g2d.drawString("Temperature", (height / 2) - 4 * "Temperature".length(), -30);
+			g2d.setColor(Color.RED);
+			g2d.setColor(axesColors[fixedAxes[3]]);
+			g2d.drawString(yAxis, (height / 2) - 4 * yAxis.length(), -30);
+			g2d.setColor(fg);
 			g2d.rotate(Math.PI / 2);
-			
-		}
 
+		}
 
 		// X-Axis ticks
 		if (drawXTicks)
@@ -695,7 +1048,9 @@ public class HeatMap extends JPanel
 		// X-Axis title
 		if (drawXTitle && xAxis != null)
 		{
+			g2d.setColor(axesColors[fixedAxes[2]]);
 			g2d.drawString(xAxis, (width / 2) - 4 * xAxis.length(), height - 3);
+			g2d.setColor(fg);
 		}
 
 		// Legend
@@ -710,22 +1065,175 @@ public class HeatMap extends JPanel
                 g2d.fillRect(xStart, height - 19, 1, 9);
             }*/
 			g2d.drawRect(width - 50, 30, 10, height - 60);
+
+			float tdiff = (float)Math.ceil(DataHolder.getMaxFilter(4)-DataHolder.getMinFilter(4));
+			int toffset = (int)(DataHolder.getMinFilter(4)); 
+
+			//			HeatMap.debug("tDiff: "+tdiff+"; tOffset: "+toffset+"; mO: "+tempMinObserved +"; MO: "+tempMaxObserved);
+			int yStart; // = height - 31 - (int) Math.ceil(y * ((height - 60) / (colors.length * 1.0)));
+
 			for (int y = 0; y < height - 61; y++)
 			{
-				int yStart = height - 31 - (int) Math.ceil(y * ((height - 60) / (colors.length * 1.0)));
 				yStart = height - 31 - y;
 				g2d.setColor(colors[(int) ((y / (float) (height - 60)) * (colors.length * 1.0))]);
+				//				g2d.setColor(colors[(int) ((y / (float) (height - 60)) * (colors.length * 1.0))+((int)((height - 61)/tdiff+toffset))]);
 				g2d.fillRect(width - 49, yStart, 9, 1);
 			}
-			String labelMin = df.format(Math.abs(tempSmallest)); //"0"; // df.format(((y / (float) numXTicks) * (xMax - xMin)) + xMin);
-			String labelMax = df.format(Math.abs(tempLargest)); //"10";// df.format(((y / (float) numXTicks) * (xMax - xMin)) + xMin);
+			//			String labelMin = df.format(Math.abs((int)(DataHolder.getMinFilter(4))));  // was tempSmallest
+			//			String labelMax = df.format(Math.abs((int)(DataHolder.getMaxFilter(4))));  // was tempLargest
+			String labelMin = df.format(Math.abs((int)(tempSmallest)));  // was tempSmallest
+			String labelMax = df.format(Math.abs((int)(tempLargest)));  // was tempLargest
+			//DONE.DEPR: HM) Hi: draw min and max and last selected markers
+
 			int labelMinY = height - 35; //(31 + x * xDist) - 4 * labelMin.length();
 			int labelMaxY = 40; //(31 + x * xDist) - 4 * labelMin.length();
 			g2d.setColor(fg);
 			g2d.drawString(labelMin, width - 35, labelMinY);
 			g2d.drawString(labelMax, width - 35, labelMaxY);
 
+			//			g2d.setColor(Color.cyan);
+			//			g2d.drawRect(width-BORDER_R+12, BORDER_T, 5, 1);
+			//			g2d.drawRect(width-BORDER_R+15, BORDER_T, 1, 2);
+			//			
+			//			g2d.drawRect(width-BORDER_R+12, getHeight()-BORDER_B, 5, 1);
+			//			g2d.drawRect(width-BORDER_R+15, getHeight()-BORDER_B, 1, -2);
+
+			float tCurrDiff = DataHolder.getMaxFilter(4)- DataHolder.getMinFilter(4);
+			float tMaxDiff = tempLargest-tempSmallest;
+
+			//			int tMinY = (int) ((DataHolder.getMinFilter(4)/tCurrDiff)+(getHeight()-BORDER_B-((int)((drawPanelHeight)*(tCurrDiff))/(tMaxDiff))));//getHeight()-BORDER_B - Math.abs((int)(DataHolder.getMinFilter(4)*tMaxDiff*1.0));
+			//			int tMaxY = (int) ((DataHolder.getMinFilter(4)/tCurrDiff)+((int) BORDER_T+((int)((drawPanelHeight)*(tCurrDiff))/(tMaxDiff))));//BORDER_T + Math.abs((int)(DataHolder.getMaxFilter(4)*tMaxDiff*1.0));
+
+			int tMinY = (int)((DataHolder.getMinFilter(4) - tempSmallest)*(drawPanelHeight/(tMaxDiff*1.0)));
+			int tMaxY = drawPanelHeight-(int)((tempLargest - DataHolder.getMaxFilter(4))*(drawPanelHeight/(tMaxDiff*1.0)));
+//			HeatMap.debug("tCurrDiff: "+tCurrDiff);
+//			HeatMap.debug("tMaxDiff: "+tMaxDiff);
+//			HeatMap.debug("MinY: "+tMinY);
+//			HeatMap.debug("MaxY: "+tMaxY);
+
+			//			Blank Gradient Bar
+			g2d.setColor(Color.black);
+			g2d.fillRect(width - 49, BORDER_T, 9, drawPanelHeight-tMaxY);	
+			g2d.fillRect(width - 49, drawPanelHeight+BORDER_B-tMinY, 9, tMinY);
+
+/*			if ((lastselectedX >= 0)&&(lastselectedY >= 0)){
+				//				float tMaxDiff = tempLargest-tempSmallest;
+				float tValue = getValue(getDPX(lastselectedX),getDPY(lastselectedY));
+				int tValY = (int)(getHeight()-(tValue/(tMaxDiff*1.0)*drawPanelHeight));
+				HeatMap.debug("drawing ball at y="+tValY);
+				g2d.setColor(Color.black);
+				g2d.fillRect(getWidth()-45, tValY, 8, 8);
+			}*/
+
+			//			HeatMap.debug(this.getUI().toString());
+			//			HeatMap.debug("xAxis: "+xAxis+"; yAxis: "+yAxis);
+
 		}
-		
-	}
+
+
+		//TO.DO.DEPR: HM) move into a more dynamic method
+/*		HeatMap.debug("lastselected at x:"+lastselectedX+"; y:"+lastselectedY);
+
+		if ((lastselectedX >= 0)&&(lastselectedY >= 0)){
+			float tMaxDiff = tempLargest-tempSmallest;
+			float tValue = getValue(getDPX(lastselectedX),getDPY(lastselectedY));
+			int tValY = (int)(getHeight()-(tValue/(tMaxDiff*1.0)*drawPanelHeight));
+			HeatMap.debug("drawing ball at y="+tValY);
+			g2d.setColor(Color.black);
+			g2d.fillRect(getWidth()-45, tValY, 8, 8);
+			g2d.fillOval(getWidth() - 39, tValY, 5, 5);
+			g2d.setColor(Color.cyan);
+			g2d.fillOval(getWidth() - 39, tValY, 3, 3);
+			//			lastselectedX = lastselectedY = -1;
+		}
+*/	}
+
 }
+
+/*************************************************************************************************************************************************************************/
+/**
+ * This function generates data that is not vertically-symmetric, which
+ * makes it very useful for testing which type of vertical axis is being
+ * used to plot the data. If the graphics Y-axis is used, then the lowest
+ * values should be displayed at the top of the frame. If the non-graphics
+ * (mathematical coordinate-system) Y-axis is used, then the lowest values
+ * should be displayed at the bottom of the frame.
+ * @return float[][] data values of a simple vertical ramp
+ */
+/*	public static float[][] generateRampTestData()
+{
+	float[][] data = new float[10][10];
+	for (int x = 0; x < 10; x++)
+	{
+		for (int y = 0; y < 10; y++)
+		{
+			data[x][y] = y;
+		}
+	}
+
+	return data;
+}*/
+
+/**
+ * This function generates an appropriate data array for display. It uses
+ * the function: z = sin(x)*cos(y). The parameter specifies the number
+ * of data points in each direction, producing a square matrix.
+ * @param dimension Size of each side of the returned array
+ * @return float[][] calculated values of z = sin(x)*cos(y)
+ */
+/*	public static float[][] generateSinCosData(int dimension)
+{
+	if (dimension % 2 == 0)
+	{
+		dimension++; //make it better
+	}
+
+	float[][] data = new float[dimension][dimension];
+	float sX, sY; //s for 'Scaled'
+
+	for (int x = 0; x < dimension; x++)
+	{
+		for (int y = 0; y < dimension; y++)
+		{
+			sX = (float)(20 * Math.PI * (x / (float) dimension)); // 0 < sX < 2 * Pi
+			sY = (float)(20 * Math.PI * (y / (float) dimension)); // 0 < sY < 2 * Pi
+			data[x][y] = (float)(Math.sin(sX) * Math.cos(sY));
+		}
+	}
+
+	return data;
+}
+ */
+/**
+ * This function generates an appropriate data array for display. It uses
+ * the function: z = Math.cos(Math.abs(sX) + Math.abs(sY)). The parameter 
+ * specifies the number of data points in each direction, producing a 
+ * square matrix.
+ * @param dimension Size of each side of the returned array
+ * @return float[][] calculated values of z = Math.cos(Math.abs(sX) + Math.abs(sY));
+ */
+/*	public static float[][] generatePyramidData(int dimension)
+{
+	if (dimension % 2 == 0)
+	{
+		dimension++; //make it better
+	}
+
+	float[][] data = new float[dimension][dimension];
+	float sX, sY; //s for 'Scaled'
+
+	for (int x = 0; x < dimension; x++)
+	{
+		for (int y = 0; y < dimension; y++)
+		{
+			sX = 6 * (x / (float) dimension); // 0 < sX < 6
+			sY = 6 * (y / (float) dimension); // 0 < sY < 6
+			sX = sX - 3; // -3 < sX < 3
+			sY = sY - 3; // -3 < sY < 3
+			data[x][y] = (float)(Math.cos(Math.abs(sX) + Math.abs(sY)));
+		}
+	}
+
+	return data;
+}
+ */
