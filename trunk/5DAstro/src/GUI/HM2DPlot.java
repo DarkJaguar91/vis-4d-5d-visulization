@@ -3,39 +3,19 @@ package GUI;
 import heatMap.Gradient;
 import heatMap.HeatMap;
 
-//import java.awt.BorderLayout;
 import java.awt.Color;
-//import java.awt.Component;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-//import java.io.File;
 
 import javax.swing.JFrame;
-// import javax.swing.JInternalFrame;
-//import javax.swing.JMenuBar;
-//import javax.swing.JMenuItem;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
-//import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-//import org.jfree.chart.JFreeChart;
-//import org.jfree.chart.axis.NumberAxis;
-//import org.jfree.chart.plot.PlotOrientation;
-//import org.jfree.chart.plot.XYPlot;
-//import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-//import org.jfree.data.xy.XYSeries;
-//import org.jfree.data.xy.XYSeriesCollection;
 
 import Data.DataHolder;
-//import Data.HeightMap;
-//import Data.ActiveMap;
-//import HM2DStuff.HM2DGraph;
-//import HM2DStuff.DrawingPane;
-//import HM2DStuff.ImageLoader;
 
-// import Forms.DrawingPane;
 
 /**
  * 
@@ -58,12 +38,6 @@ public class HM2DPlot extends JFrame{
 	HeatMap panel;
 
 	int[] previousSelections;
-
-	//
-	//	private HeightMap dataHMap = ImageLoader.loadHeightMap(new File("res/heightmapdata.pmf"));
-	//	private ActiveMap activeHMap = new ActiveMap(dataHMap);
-	//	
-	//	private DrawingPane label;
 
 	/**
 	 * Constructor
@@ -107,80 +81,31 @@ public class HM2DPlot extends JFrame{
 			public void windowActivated(WindowEvent arg0) {
 			}
 		});
-		/*
-		this.setSize(650, 670); // 640x640 + padding
-
-		chartPanel = new ChartPanel(null);
-		heatMapPanel = new JPanel();
-	//JFrame heatMapFrame = new JFrame(new HM2DGraph().getImage());
-		JFrame heatMapFrame = new JFrame("");
-//		heatMapPanel = new JPanel(this);
-//		label = new DrawingPane(new JFrame(), this);
-
-	//	heatMapFrame.add((Component)(new HM2DGraph().getImage()));
-
-		this.getContentPane().setLayout(new BorderLayout());
-		this.getContentPane().add(chartPanel);
-		//this.getContentPane().add(heatMapFrame);
-
-		this.plotGraph();
-
-		// menu bar
-		JMenuBar bar = new JMenuBar();
-		final JMenuItem grid = new JMenuItem("Show Grid");
-		bar.add(grid);
-		grid.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				gridOn = !gridOn;
-				grid.setText(gridOn ? "Hide Grid" : "Show Grid");
-				plotGraph();
-			}
-		});
-		final JMenuItem line = new JMenuItem("Scatter Plot");
-		bar.add(line);
-		line.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				showLine = !showLine;
-				line.setText(showLine ? "Scatter Plot" : "Line Graph");
-				plotGraph();
-			}
-		});
-
-		//	this.setJMenuBar(bar);
-
-		HM2DGraph newGraph = new HM2DGraph();
-		this.setVisible(true);
-		 */
-		//		 super("Heat Map Frame");
+		
 		float[][] data;
 		//	        int[] dl = data.length;
 		//	        for int j = 0; j< data[0][data.length-1];
 
-		this.setSize(680, 670); // 640x640 + padding; +30 for legend indices
+		this.setSize(692, 685); // 640x640 + padding; +30 for legend indices; +12 +15
 
-		data = HeatMap.generatePyramidData(100);
+		//data = HeatMap.generatePyramidData(100);
 		boolean useGraphicsYAxis = true;
-
-		// you can use a pre-defined gradient:
-		panel = new HeatMap(data, useGraphicsYAxis, Gradient.GRADIENT_BLUE_TO_RED);
-
-		// or you can also make a custom gradient:
+		data = new float[1][1]; 
+		// you can use a pre-defined gradient: 
 		Color[] gradientColors = new Color[]{Color.blue, Color.yellow, Color.red};
-		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 320);
-		panel.updateGradient(customGradient);
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 64); //was 320; TO DO: HM) Lo: Why is this limit hardcoded?
+		panel = new HeatMap(data, useGraphicsYAxis, customGradient);
 
 		// set miscelaneous settings
 		panel.setDrawLegend(true);
 
-		panel.setTitle("Height (m)");
+		panel.setTitle("Temperature");
 		panel.setDrawTitle(true);
 
-		panel.setXAxisTitle("Dimension 1"); //TODO: get Dimension names from DataHolder
+		panel.setXAxisTitle("Dimension 1"); //DONE: get Dimension names from DataHolder
 		panel.setDrawXAxisTitle(true);
 
-		panel.setYAxisTitle("Dimension 2"); //TODO: get Dimension names from DataHolder
+		panel.setYAxisTitle("Dimension 2"); //DONE: get Dimension names from DataHolder
 		panel.setDrawYAxisTitle(true);
 
 		//panel.setCoordinateBounds(0.0, 1.0, 0.0, 1.0); // done in updateHMap()
@@ -191,6 +116,9 @@ public class HM2DPlot extends JFrame{
 		panel.setColorBackground(Color.white);
 
 		this.getContentPane().add(panel);
+//		this.setJMenuBar(new JMenuBar.add(new JMenuItem("Exit")));
+		JMenuBar Exit = new JMenuBar(); Exit.add(new JMenuItem("Exit")); //TO.DO.DEPR: HM) Lo: Add JMenu Handlers 
+//		this.setJMenuBar(Exit);
 		this.updateHMap();
 		this.setVisible(true);
 	}

@@ -471,7 +471,7 @@ public class SliderMenu extends JFrame implements ChangeListener, MouseListener{
 		// graph		
 		showGraph.setText(DataHolder.plotterGraph.isVisible() ? "Hide Graph Plotter" : "Show Graph Plotter");
 		// heatmap
-		//showHMap.setText(DataHolder.hm2dGraph.isVisible() ? "Hide Heat Map" : "Show Heat Map");
+		showHMap.setText(DataHolder.hm2dGraph.isVisible() ? "Hide Heat Map" : "Show Heat Map");
 	}
 	
 	@Override

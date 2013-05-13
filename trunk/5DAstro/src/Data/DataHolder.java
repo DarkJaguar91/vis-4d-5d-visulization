@@ -63,8 +63,8 @@ public class DataHolder {
 						plotter = new frmPlot();
 						plotter.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 						
-						//hm2dGraph = new HM2DPlot();
-						//hm2dGraph.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
+						hm2dGraph = new HM2DPlot();
+						hm2dGraph.setLocation(sliderMenu.getWidth(), plotter.getLocation().y);
 						
 						plotterGraph = new GraphScreen();
 						plotterGraph.setLocation(sliderMenu.getWidth(), (int)(plotter.getHeight() * 0.2f));
@@ -80,7 +80,7 @@ public class DataHolder {
 	public static void updatePlotter(){
 		plotter.reload();
 		plotterGraph.plotGraph();
-		//hm2dGraph.updateHMap();
+		hm2dGraph.updateHMap();
 	}
 	
 	public static void startLoading(){
