@@ -7,7 +7,6 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class loadMenu extends JDialog{
