@@ -497,6 +497,185 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		}
 		gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_FILL);
 		gl.glEnd();
+		gl.glLineWidth(0.2f);
+		//draw the lines on the green cutting plane:
+		gl.glColor4f(axisColour[0]*0.6f,axisColour[1]*0.6f,axisColour[2]*0.6f,0.2f);
+		gl.glBegin(gl.GL_LINES);
+		switch(DataHolder.getFixedDimension(0)){
+		case 0:
+			stepX = (globalMaxX - globalMinX)*scaleX/(DataHolder.data.getLength(1)-1);
+			stepY = (globalMaxY - globalMinY)*scaleY/(DataHolder.data.getLength(2)-1);
+			stepH = (globalMaxH - globalMinH)*scaleZ/(DataHolder.data.getLength(3)-1);
+			switch (DataHolder.getFixedDimension(1)){
+			case 1:
+				switch(DataHolder.getFixedDimension(2)){
+				case 2:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					break;
+				case 3:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 2:
+				switch(DataHolder.getFixedDimension(2)){
+				case 1:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					break;
+				case 3:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 3:
+				switch(DataHolder.getFixedDimension(2)){
+				case 1:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				case 2:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				}
+				break;
+			}
+			break;
+		case 1:
+			stepX = (globalMaxX - globalMinX)*scaleX/(DataHolder.data.getLength(0)-1);
+			stepY = (globalMaxY - globalMinY)*scaleY/(DataHolder.data.getLength(2)-1);
+			stepH = (globalMaxH - globalMinH)*scaleZ/(DataHolder.data.getLength(3)-1);
+			switch (DataHolder.getFixedDimension(1)){
+			case 0:
+				switch(DataHolder.getFixedDimension(2)){
+				case 2:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					break;
+				case 3:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 2:
+				switch(DataHolder.getFixedDimension(2)){
+				case 0:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					break;
+				case 3:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 3:
+				switch(DataHolder.getFixedDimension(2)){
+				case 0:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				case 2:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				}	
+				break;
+			}
+			break;
+		case 2:
+			stepX = (globalMaxX - globalMinX)*scaleX/(DataHolder.data.getLength(0)-1);
+			stepY = (globalMaxY - globalMinY)*scaleY/(DataHolder.data.getLength(1)-1);
+			stepH = (globalMaxH - globalMinH)*scaleZ/(DataHolder.data.getLength(3)-1);
+			switch (DataHolder.getFixedDimension(1)){
+			case 0:
+				switch (DataHolder.getFixedDimension(2)){
+				case 1:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					break;
+				case 3:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 1:
+				switch (DataHolder.getFixedDimension(2)){
+				case 0:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					break;
+				case 3:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 3:
+				switch (DataHolder.getFixedDimension(2)){
+				case 0:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				case 1:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				}
+				break;
+			}
+			break;
+		case 3:
+			stepX = (globalMaxX - globalMinX)*scaleX/(DataHolder.data.getLength(0)-1);
+			stepY = (globalMaxY - globalMinY)*scaleY/(DataHolder.data.getLength(1)-1);
+			stepH = (globalMaxH - globalMinH)*scaleZ/(DataHolder.data.getLength(2)-1);
+			switch (DataHolder.getFixedDimension(1)){
+			case 0:
+				switch (DataHolder.getFixedDimension(2)){
+				case 1:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,DataHolder.getFixedDimensionStep(2)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					break;
+				case 2:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(1)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 1:
+				switch (DataHolder.getFixedDimension(2)){
+				case 0:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMinH*scaleZ-axisOffset+offSetH);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,DataHolder.getFixedDimensionStep(1)*stepH,globalMaxH*scaleZ+axisOffset+offSetH);
+					break;
+				case 2:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(1)*stepH,DataHolder.getFixedDimensionStep(2)*stepY);
+					break;
+				}
+				break;
+			case 2:
+				switch (DataHolder.getFixedDimension(2)){
+				case 0:
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMinY*scaleY-axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(DataHolder.getFixedDimensionStep(2)*stepX,globalMaxY*scaleY+axisOffset+offSetY,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				case 1:
+					gl.glVertex3d(offSetX+globalMinX*scaleX-axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					gl.glVertex3d(offSetX+globalMaxX*scaleX+axisOffset,DataHolder.getFixedDimensionStep(2)*stepH,DataHolder.getFixedDimensionStep(1)*stepY);
+					break;
+				}
+				break;
+			}
+			break;
+		}
+		gl.glEnd();
 		gl.glLineWidth(1);
 		gl.glEndList();
 	}
