@@ -69,7 +69,6 @@ import java.text.DecimalFormat;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 

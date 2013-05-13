@@ -89,6 +89,7 @@ public class DataHolder {
 		loadmenu.repaint();
 		sliderMenu.setVisible(false);
 		plotter.setVisible(false);
+		hm2dGraph.setVisible(false);
 		plotterGraph.setVisible(false);
 	}
 	
@@ -97,6 +98,7 @@ public class DataHolder {
 		sliderMenu.setVisible(true);
 		plotter.setVisible(true);
 		plotterGraph.setVisible(true);
+		hm2dGraph.setVisible(true);
 		updatePlotter();
 		sliderMenu.refreshSlidersWithNewData();
 	}
