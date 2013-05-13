@@ -2,6 +2,13 @@ package Data;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -67,6 +74,7 @@ public class DataArray {
 
 		@Override
 		public void run() {
+//			long ttt = System.currentTimeMillis();
 			Scanner s;
 			try {
 				s = new Scanner(new FileInputStream(fname));
@@ -96,11 +104,86 @@ public class DataArray {
 							}
 				}
 				s.close();
+				
+//				InputStream input = new FileInputStream(fname);
+//				byte[] num = new byte[4];
+//				byte[] str;
+//				data.minData = new float[5];
+//				data.maxData = new float[5];
+//				data.DimensionNames = new String[4];
+//				int[] dimSize = new int[4];
+//				for (int i = 0; i < 4; ++i){
+//					input.read(num);
+//					str = new byte[ByteBuffer.wrap(num).getInt()];
+//					input.read(str);
+//					data.DimensionNames[i] = new String(str);
+//					input.read(num);
+//					dimSize[i] = ByteBuffer.wrap(num).getInt();
+//					input.read(num);
+//					data.minData[i] = ByteBuffer.wrap(num).getFloat();
+//					input.read(num);
+//					data.maxData[i] = ByteBuffer.wrap(num).getFloat();
+//				}
+//				data.data = new float[dimSize[0]][dimSize[1]][dimSize[2]][dimSize[3]];
+//				input.read(num);
+//				data.minData[4] = ByteBuffer.wrap(num).getFloat();
+//				input.read(num);
+//				data.maxData[4] = ByteBuffer.wrap(num).getFloat();
+//				
+//				for (int i = 0; i < dimSize[0]; ++i) {
+//					// System.out.println(i/(float)dimSize[0]);
+//					for (int j = 0; j < dimSize[1]; ++j)
+//						for (int k = 0; k < dimSize[2]; ++k)
+//							for (int l = 0; l < dimSize[3]; ++l) {
+//								input.read(num);
+//								data.data[i][j][k][l] = ByteBuffer.wrap(num).getFloat();
+//							}
+//				}
+//				
+//				input.close();
+				
+			
+//				Path path = Paths.get(fname);
+//				ByteBuffer bb = ByteBuffer.wrap(Files.readAllBytes(path));
+//				bb.order(ByteOrder.LITTLE_ENDIAN);
+//			    
+//			    data.minData = new float[5];
+//				data.maxData = new float[5];
+//				data.DimensionNames = new String[4];
+//				int[] dimSize = new int[4];
+//				
+//				for (int i = 0; i < 4; ++i){
+//					byte[] str = new byte[bb.getInt()];
+//					bb.get(str);
+//					data.DimensionNames[i] = new String(str);
+//					dimSize[i] = bb.getInt();
+//					data.minData[i] = bb.getFloat();
+//					data.maxData[i] = bb.getFloat();
+//				}
+//				
+//				data.data = new float[dimSize[0]][dimSize[1]][dimSize[2]][dimSize[3]];
+//				data.minData[4] = bb.getFloat();
+//				data.maxData[4] = bb.getFloat();
+//				
+//				for (int i = 0; i < dimSize[0]; ++i) {
+//					// System.out.println(i/(float)dimSize[0]);
+//					for (int j = 0; j < dimSize[1]; ++j)
+//						for (int k = 0; k < dimSize[2]; ++k)
+//							for (int l = 0; l < dimSize[3]; ++l) {
+//								data.data[i][j][k][l] = bb.getFloat();
+//							}
+//				}
 			} catch (FileNotFoundException e) {
 				JOptionPane.showMessageDialog(null,
 						"File could not be found.", "Error",
 						JOptionPane.ERROR_MESSAGE);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
+//			long tttt = System.currentTimeMillis();
+			
+//			System.out.println(tttt - ttt);
+			
 			DataHolder.stopLoading();
 		}
 	}

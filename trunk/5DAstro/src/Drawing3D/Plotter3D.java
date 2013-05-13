@@ -500,7 +500,7 @@ public class Plotter3D extends GLJPanel implements GLEventListener,
 		gl.glLineWidth(0.2f);
 		//draw the lines on the green cutting plane:
 		gl.glColor4f(axisColour[0]*0.6f,axisColour[1]*0.6f,axisColour[2]*0.6f,0.2f);
-		gl.glBegin(gl.GL_LINES);
+		gl.glBegin(GL.GL_LINES);
 		switch(DataHolder.getFixedDimension(0)){
 		case 0:
 			stepX = (globalMaxX - globalMinX)*scaleX/(DataHolder.data.getLength(1)-1);
