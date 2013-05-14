@@ -207,7 +207,7 @@ public class HeatMap extends JPanel implements MouseMotionListener
 				//				displayTemperature(e.getX(),e.getY(),1000);
 				//								ToolTipManager.sharedInstance().setInitialDelay(500);
 				//mouseClicked(e);
-				HeatMap.debug("Mouse Entered Panel");
+//				HeatMap.debug("Mouse Entered Panel");
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -366,7 +366,7 @@ public class HeatMap extends JPanel implements MouseMotionListener
 				retArray[2] = (float)(1.0*getDPX(xParam)*((rangeMax-rangeMin)/(data.length)));
 			else if (i==3) // y-axis
 				retArray[3] = (float)(1.0*getDPY(yParam)*((rangeMax-rangeMin)/(data[0].length)));
-			HeatMap.debug("max["+i+"]:"+rangeMax+"; min:"+rangeMin);
+//			HeatMap.debug("max["+i+"]:"+rangeMax+"; min:"+rangeMin);
 		}
 //		HeatMap.debug();
 /*		retArray[2] = getValue(getDPX(xParam),getDPY(yParam));
@@ -794,13 +794,13 @@ public class HeatMap extends JPanel implements MouseMotionListener
 			scaleX=(float)((drawPanelWidth)/(1.0*paramData.length));
 			scaleY=(float)((drawPanelHeight)/(1.0*paramData[0].length));
 		}
-		HeatMap.debug("DrawPanel Size: ("+drawPanelWidth+","+drawPanelHeight+") of ("+getWidth()+","+getHeight()+")");
+//		HeatMap.debug("DrawPanel Size: ("+drawPanelWidth+","+drawPanelHeight+") of ("+getWidth()+","+getHeight()+")");
 
 		if (data!=null)
-			HeatMap.debug("Scales: ("+scaleX+","+scaleY+","+data.length+","+data[0].length+");");
+//			HeatMap.debug("Scales: ("+scaleX+","+scaleY+","+data.length+","+data[0].length+");");
 
-		HeatMap.debug("dataSize: ["+DataHolder.data.getLength(0)+","+DataHolder.data.getLength(1)+","+DataHolder.data.getLength(2)+","+DataHolder.data.getLength(3)+"]");
-		HeatMap.debug("Length of colors: "+colors.length);
+//		HeatMap.debug("dataSize: ["+DataHolder.data.getLength(0)+","+DataHolder.data.getLength(1)+","+DataHolder.data.getLength(2)+","+DataHolder.data.getLength(3)+"]");
+//		HeatMap.debug("Length of colors: "+colors.length);
 
 		tempLargest = DataHolder.getMaxFilter(4);
 		tempSmallest = DataHolder.getMinFilter(4);
@@ -959,7 +959,7 @@ public class HeatMap extends JPanel implements MouseMotionListener
 		// Y-Axis ticks
 		if (drawYTicks)
 		{
-			int selected = DataHolder.getFixedDimensionStep(DataHolder.getFixedDimension(2));
+			int selected = DataHolder.getFixedDimensionStep(2);
 			int yDist = (int) ((height - 60) / (float) numYTicks); //distance between ticks
 			for (int y = 0; y <= numYTicks; y++)
 			{
@@ -974,16 +974,19 @@ public class HeatMap extends JPanel implements MouseMotionListener
 				g2d.rotate( -Math.PI / 2);
 			}
 
-			int gmf = (int)(DataHolder.getMinFilter(DataHolder.getFixedDimension(2)));
-			int steps = (int)(DataHolder.getMaxFilter(DataHolder.getFixedDimension(2)) - DataHolder.getMinFilter(DataHolder.getFixedDimension(2)))+1;
+			int gmf = (int)(DataHolder.getMinFilter(fixedAxes[2]));
+			int steps = (int)(DataHolder.getMaxFilter(fixedAxes[2]) - DataHolder.getMinFilter(fixedAxes[2]))+1;
 			for (int y = 0; y < steps; y++) {
 
 				//TODO: HM) #Cnfm: if x-axis is not lower in order to y-axis in fixed axes, orientationx = false.
-				orientationX = (fixedAxes[2]<fixedAxes[3]);
+//				orientationX = (fixedAxes[2]<fixedAxes[3]);
+				orientationX = getOrientation(fixedAxes); 
+//						HeatMap.debug("Orientation now: "+(orientationX?"Horizontal":"Vertical")+"; fixedAxes: "+toStrArr(fixedAxes));
 
 				if ((y+gmf) == selected) // indicate the step over the bg (and fg)
 				{
-					HeatMap.debug("OrientationX: "+orientationX+"; ");
+//					HeatMap.debug("fixedAxes[2]: "+fixedAxes[2]+"; fixedAxes[3]"+fixedAxes[3]);
+//					HeatMap.debug("OrientationX: "+orientationX+"; ");
 					if (orientationX){
 						//TODO: HM) #Cnfm Ensure marker display once data is loaded
 						//TODO: HM) #Cnfm Case Axes(230|1)+Data; Cannot find graph horiz line when stepping
@@ -991,6 +994,7 @@ public class HeatMap extends JPanel implements MouseMotionListener
 						int offsetY = height - BORDER_T - (int)((y+0.5) * (height-BORDER_Y)/(1.0*steps));
 						// HeatMap.debug("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
 						g2d.setColor(bg);
+						g2d.fillRect(31, offsetY , width-BORDER_X,3);
 						g2d.setColor(Color.black);
 						g2d.fillRect(31, offsetY + 1 , width-BORDER_X,1);
 						g2d.setColor(Color.red);
@@ -1004,6 +1008,7 @@ public class HeatMap extends JPanel implements MouseMotionListener
 						int offsetY = /*width -*/ BORDER_L + (int)((y+0.5) * (width-BORDER_X)/(1.0*steps));
 						HeatMap.debug("height: "+height+"; Selected Y-Axis: "+selected+"; OffsetY: "+offsetY);
 						g2d.setColor(bg);
+						g2d.fillRect(offsetY, 30 ,3, height-BORDER_Y);
 						g2d.setColor(Color.black);
 						g2d.fillRect(offsetY + 1, 31 ,1, height-BORDER_Y);
 						g2d.setColor(Color.red);
@@ -1146,7 +1151,26 @@ public class HeatMap extends JPanel implements MouseMotionListener
 			//			lastselectedX = lastselectedY = -1;
 		}
 */	}
-
+	public boolean getOrientation(int[] paramAxes){
+		String currentRepr = toStrArr(paramAxes);
+		String[] orientX = {"012","023","031","102","120","130","201","210","230","301","310","320"};
+//		String[] orientX = {"023","032","123","132","213","301","312","321"};
+//		String[] orientY = {"013","031","103","130","203","302","320"};
+//		String[] orientZ = {"012","021","102","120","201","210","310"};
+		
+		for (int i = 0; i < orientX.length; ++i){
+//			HeatMap.debug("Comparing "+currentRepr+" and "+orientX[i]);
+			if (orientX[i].equals(currentRepr)){
+				return true;
+			}
+		}
+		return false;
+	}
+	public String toStrArr(int[] paramInput){
+		if ((paramInput == null) || (paramInput.length < 3))
+			return "";
+		return ""+paramInput[0]+paramInput[1]+paramInput[2];
+	}
 }
 
 /*************************************************************************************************************************************************************************/
